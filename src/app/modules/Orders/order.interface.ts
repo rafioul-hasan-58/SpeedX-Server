@@ -4,6 +4,6 @@ export interface IOrder {
     product: Types.ObjectId;
     quantity: number;
     status: string;
-    totalPrice: number;
+    totalPrice?: number;
     buyer: Types.ObjectId;
 }

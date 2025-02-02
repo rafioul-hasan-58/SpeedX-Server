@@ -12,7 +12,7 @@ const orderSchema = new Schema<IOrder>({
         type: String
     },
     totalPrice: {
-        type: Number
+        type: Number,
     },
     buyer: {
         type: mongoose.Schema.ObjectId
