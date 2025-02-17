@@ -2,11 +2,15 @@ import { model, Schema } from "mongoose";
 import { IUser, UserModel } from "./user.interface";
 import bcrypt from 'bcrypt';
 import config from "../../config";
-const userSchema = new Schema<IUser,UserModel>(
+const userSchema = new Schema<IUser, UserModel>(
     {
         name: {
             type: String,
             required: [true, 'name is required']
+        },
+        image: {
+            type: String,
+            default: ''
         },
         email: {
             type: String,
@@ -45,7 +49,7 @@ userSchema.pre('save', async function (next) {
 userSchema.statics.isUserExistsByEmail = async function (email: string) {
     return await User.findOne({ email: email })
 }
-userSchema.statics.isPasswordMatched=async function (plainTextPassword: string, hashedPassword: string) {
+userSchema.statics.isPasswordMatched = async function (plainTextPassword: string, hashedPassword: string) {
     return await bcrypt.compare(plainTextPassword, hashedPassword)
 }
-export const User = model<IUser,UserModel>('User', userSchema);
+export const User = model<IUser, UserModel>('User', userSchema);

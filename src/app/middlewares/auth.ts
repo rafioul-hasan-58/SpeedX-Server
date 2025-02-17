@@ -7,12 +7,7 @@ import config from "../config"
 import { User } from "../modules/Users/user.model"
 const auth = (requiredRole: string[]) => {
     return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-        const intialToken = req.headers.authorization;
-        // console.log(token);
-        if (intialToken && !intialToken.startsWith('Bearer')) {
-            throw new AppError(httpStatus.FORBIDDEN, "Invalid token format/_bearer_missing_/")
-        }
-        const token = intialToken?.split(' ')[1];
+        const token = req.headers.authorization;
         if (!token) {
             throw new AppError(httpStatus.NOT_FOUND, "Token is not found")
         }

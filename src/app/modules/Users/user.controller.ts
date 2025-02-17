@@ -12,8 +12,8 @@ const createUserIntoDb = catchAsync(async (req: Request, res: Response) => {
     })
 })
 const getMyProfile = catchAsync(async (req: Request, res: Response) => {
-    const{id}=req.params
-    const result = await userServices.getProfileFromDb(id)
+    const { email } = req.params
+    const result = await userServices.getProfileFromDb(email)
     res.status(httpStatus.OK).json({
         success: true,
         message: 'Profile retrived successfully',
@@ -21,9 +21,19 @@ const getMyProfile = catchAsync(async (req: Request, res: Response) => {
         data: result
     })
 })
+const getAllUsers = catchAsync(async (req: Request, res: Response) => {
+    const result = await userServices.getAllUsersFromDb()
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: 'All users retrived successfully',
+        statusCode: 200,
+        data: result
+    })
+})
 const updateUserIntoDb = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
-    const result = await userServices.updateUserIntoDb(req.body, id)
+    console.log(req.file,'file');
+    const result = await userServices.updateUserIntoDb(req.body, id,req.file)
     res.status(httpStatus.OK).json({
         success: true,
         message: 'User updated successfully',
@@ -46,5 +56,6 @@ export const userController = {
     createUserIntoDb,
     updateUserIntoDb,
     deleteUserFromDb,
-    getMyProfile
+    getMyProfile,
+    getAllUsers
 }

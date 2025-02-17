@@ -10,6 +10,7 @@ const createProductValidationSchema = z.object({
 });
 const updateProductValidationSchema = z.object({
     name: z.string().min(1, "Name is required").optional(),
+    color: z.string().optional(),
     brandName: z.string().min(1, "Brand name is required").optional(),
     price: z.number().positive("Price must be a positive number").optional(),
     description: z.string().min(1, "Description is required").optional(),
@@ -19,5 +20,6 @@ const updateProductValidationSchema = z.object({
 
 export const productValidations = {
     createProductValidationSchema,
-    updateProductValidationSchema
+    updateProductValidationSchema,
+
 }

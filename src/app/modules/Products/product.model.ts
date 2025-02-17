@@ -8,6 +8,15 @@ const productSchema = new Schema<IProduct>(
             type: String,
             required: [true, 'name is required']
         },
+        image: {
+            type: String,
+            default: ''
+        }
+        ,
+        color: {
+            type: String,
+            required: [true, 'color is required']
+        },
         brandName: {
             type: String,
             required: [true, 'brand name is required']
@@ -25,7 +34,8 @@ const productSchema = new Schema<IProduct>(
             required: [true, 'stocks is required']
         },
         instock: {
-            type: Boolean
+            type: Boolean,
+            default: true
         }
     }
 )

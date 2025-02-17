@@ -8,7 +8,6 @@ import httpStatus from 'http-status'
 const createOrderIntoDb = async (payload: IOrder, user: string) => {
     const session = await mongoose.startSession();
     session.startTransaction();
-
     try {
         const { product, quantity } = payload;
         // Find product
@@ -43,7 +42,7 @@ const createOrderIntoDb = async (payload: IOrder, user: string) => {
         // Rollback transaction if something goes wrong
         await session.abortTransaction();
         session.endSession();
-        throw error; 
+        throw error;
     }
 };
 

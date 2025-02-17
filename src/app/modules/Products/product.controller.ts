@@ -5,7 +5,7 @@ import { Request, Response } from "express"
 
 
 const createProductIntoDb = catchAsync(async (req: Request, res: Response) => {
-    const result = await productServices.createProductIntoDb(req.body)
+    const result = await productServices.createProductIntoDb(req.body, req.file)
     res.status(httpStatus.OK).json({
         success: true,
         message: 'Product added successfully',
@@ -15,7 +15,8 @@ const createProductIntoDb = catchAsync(async (req: Request, res: Response) => {
 })
 const updateProductIntoDb = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params
-    const result = await productServices.updateProductIntoDb(req.body, id)
+    console.log(req.file, 'file');
+    const result = await productServices.updateProductIntoDb(req.body, id, req.file)
     res.status(httpStatus.OK).json({
         success: true,
         message: 'Product updated successfully',
@@ -33,7 +34,7 @@ const getAllProductsFromDb = catchAsync(async (req: Request, res: Response) => {
     })
 })
 const getSingleProductsFromDb = catchAsync(async (req: Request, res: Response) => {
-    const{id}=req.params
+    const { id } = req.params
     const result = await productServices.getSingleProductFromDb(id)
     res.status(httpStatus.OK).json({
         success: true,
@@ -43,7 +44,7 @@ const getSingleProductsFromDb = catchAsync(async (req: Request, res: Response) =
     })
 })
 const deleteProductsFromDb = catchAsync(async (req: Request, res: Response) => {
-    const {id}=req.params
+    const { id } = req.params
     const result = await productServices.deleteProductFromDb(id)
     res.status(httpStatus.OK).json({
         success: true,

@@ -12,7 +12,7 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
         httpOnly: true,
         sameSite: true,
         maxAge: 1000 * 60 * 60 * 24 * 365,
-      });
+    });
     res.status(httpStatus.OK).json({
         success: true,
         statusCode: 200,
@@ -22,8 +22,18 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
         }
     })
 })
+const refreshToken = catchAsync(async (req, res) => {
+    const { refreshToken } = req.cookies;
+    const result = await authService.refreshToken(refreshToken);
 
-
+    res.status(httpStatus.OK).json({
+        success: true,
+        statusCode: 200,
+        message: "Login successful",
+        data: result
+    })
+})
 export const authController = {
-    loginUser
+    loginUser,
+    refreshToken
 }
