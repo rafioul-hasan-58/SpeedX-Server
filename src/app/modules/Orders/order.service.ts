@@ -5,23 +5,28 @@ import { User } from "../Users/user.model";
 import { IOrder } from "./order.interface";
 import { Order } from "./order.model";
 import httpStatus from 'http-status'
-const createOrderIntoDb = async (payload: IOrder, user: string) => {
+import { orderUtils } from "./order.utils";
+const createOrderIntoDb = async (payload: IOrder, user: any, client_ip: string) => {
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
         const { product, quantity } = payload;
+
         // Find product
         const productInfo = await Product.findById(product).session(session);
         if (!productInfo) {
             throw new AppError(httpStatus.NOT_FOUND, 'Product not found');
         }
+
         // Ensure enough stock is available
         if (productInfo.stocks < quantity) {
             throw new AppError(httpStatus.BAD_REQUEST, 'Not enough stock available');
         }
+
         const totalPrice = Number(quantity * productInfo.price);
         const currentUser = await User.findOne({ email: user }).session(session);
         const buyer = currentUser?._id?.toString();
+
         // Decrease stock but only if enough is available
         const updatedProduct = await Product.findOneAndUpdate(
             { _id: product, stocks: { $gte: quantity } }, // Ensures enough stock
@@ -32,12 +37,38 @@ const createOrderIntoDb = async (payload: IOrder, user: string) => {
         if (!updatedProduct) {
             throw new AppError(httpStatus.BAD_REQUEST, 'Stock update failed, possibly due to insufficient stock');
         }
-        // Create the order
-        const result = await Order.create([{ ...payload, totalPrice, buyer }], { session });
-        // Commit transaction
+
+        // Create the order inside the transaction
+        let [order] = await Order.create([{ ...payload, totalPrice, buyer }], { session });
+
+        // Payment integration
+        const shurjopayPayload = {
+            amount: totalPrice,
+            order_id: order._id,
+            currency: "BDT",
+            customer_name: user.name,
+            customer_address: user.address,
+            customer_email: user.email,
+            customer_phone: user.phone,
+            customer_city: user.city,
+            client_ip,
+        };
+
+        const payment = await orderUtils.makePaymentAsync(shurjopayPayload);
+
+        if (payment?.transactionStatus) {
+            await Order.findByIdAndUpdate(order._id, {
+                transaction: {
+                    id: payment.sp_order_id,
+                    transactionStatus: payment.transactionStatus,
+                },
+            }).session(session);
+        }
+
         await session.commitTransaction();
         session.endSession();
-        return result;
+
+        return payment;
     } catch (error) {
         // Rollback transaction if something goes wrong
         await session.abortTransaction();
@@ -45,6 +76,7 @@ const createOrderIntoDb = async (payload: IOrder, user: string) => {
         throw error;
     }
 };
+
 
 
 export const orderServices = {
