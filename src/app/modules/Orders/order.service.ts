@@ -24,7 +24,8 @@ const createOrderIntoDb = async (payload: IOrder, user: any, client_ip: string) 
         }
 
         const totalPrice = Number(quantity * productInfo.price);
-        const currentUser = await User.findOne({ email: user }).session(session);
+        const currentUser = await User.findOne({ email: user.email }).session(session);
+        // console.log(currentUser, 'currentuser');
         const buyer = currentUser?._id?.toString();
 
         // Decrease stock but only if enough is available
@@ -46,11 +47,11 @@ const createOrderIntoDb = async (payload: IOrder, user: any, client_ip: string) 
             amount: totalPrice,
             order_id: order._id,
             currency: "BDT",
-            customer_name: user.name,
-            customer_address: user.address,
-            customer_email: user.email,
-            customer_phone: user.phone,
-            customer_city: user.city,
+            customer_name: currentUser?.name,
+            customer_address: payload.address,
+            customer_email: currentUser?.email,
+            customer_phone: String(payload.contact),
+            customer_city: payload.address,
             client_ip,
         };
 
@@ -68,7 +69,7 @@ const createOrderIntoDb = async (payload: IOrder, user: any, client_ip: string) 
         await session.commitTransaction();
         session.endSession();
 
-        return payment;
+        return { payment, order }
     } catch (error) {
         // Rollback transaction if something goes wrong
         await session.abortTransaction();
@@ -76,9 +77,64 @@ const createOrderIntoDb = async (payload: IOrder, user: any, client_ip: string) 
         throw error;
     }
 };
+const verifyPayment = async (order_id: string) => {
+    const verifiedPayment = await orderUtils.verifyPaymentAsync(order_id);
 
+    if (verifiedPayment.length) {
+        await Order.findOneAndUpdate(
+            {
+                "transaction.id": order_id,
+            },
+            {
+                "transaction.bank_status": verifiedPayment[0].bank_status,
+                "transaction.sp_code": verifiedPayment[0].sp_code,
+                "transaction.sp_message": verifiedPayment[0].sp_message,
+                "transaction.transactionStatus": verifiedPayment[0].transaction_status,
+                "transaction.method": verifiedPayment[0].method,
+                "transaction.date_time": verifiedPayment[0].date_time,
+                status:
+                    verifiedPayment[0].bank_status == "Success"
+                        ? "Paid"
+                        : verifiedPayment[0].bank_status == "Failed"
+                            ? "Pending"
+                            : verifiedPayment[0].bank_status == "Cancel"
+                                ? "Cancelled"
+                                : "",
+            }
+        );
+    }
 
+    // console.log(verifiedPayment);
+
+    return verifiedPayment;
+};
+const getAllOrders = async () => {
+    const result = await Order.find()
+    return result
+}
+
+const getMyOrders=async(email:string)=>{
+    const result=await Order.find({email}).populate('product')
+    // console.log(result);
+    return result
+}
+const getTodaysSale = async () => {
+    const date = new Date();
+    const startOfDay = new Date(date.setHours(0, 0, 0, 0));
+    const endOfDay = new Date(date.setHours(23, 59, 59, 999));
+    const orders = await Order.find({
+        createdAt: { $gte: startOfDay, $lte: endOfDay }
+    });
+    const items = orders.length
+    const totalSale = orders.reduce((acc, order) => acc + (order.totalPrice ?? 0), 0)
+    // console.log(items, totalSale);
+    return { totalSale, items }
+}
 
 export const orderServices = {
-    createOrderIntoDb
+    createOrderIntoDb,
+    verifyPayment,
+    getAllOrders,
+    getTodaysSale,
+    getMyOrders
 }

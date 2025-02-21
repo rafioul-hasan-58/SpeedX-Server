@@ -8,6 +8,7 @@ import { User } from "../modules/Users/user.model"
 const auth = (requiredRole: string[]) => {
     return catchAsync(async (req: Request, res: Response, next: NextFunction) => {
         const token = req.headers.authorization;
+        // console.log(token,'token');
         if (!token) {
             throw new AppError(httpStatus.NOT_FOUND, "Token is not found")
         }

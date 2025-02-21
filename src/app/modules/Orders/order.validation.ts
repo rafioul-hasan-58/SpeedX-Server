@@ -7,7 +7,6 @@ const createOrderValidationSchema = z.object({
     status: z.string().optional(),
     totalPrice: z.number().optional(),
     contact: z.number(),
-    email: z.string(),
     address: z.string(),
     orderNote: z.string().optional()
 });

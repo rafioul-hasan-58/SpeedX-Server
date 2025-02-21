@@ -5,6 +5,7 @@ const orderSchema = new Schema<IOrder>({
     product: {
         type: mongoose.Schema.ObjectId,
         required: [true, 'Product is required'],
+        ref:'Product'
     },
     contact: {
         type: Number,
@@ -21,8 +22,7 @@ const orderSchema = new Schema<IOrder>({
         type: mongoose.Schema.ObjectId
     },
     email: {
-        type: String,
-        required: [true, 'Email is required']
+        type: String
     },
     address: {
         type: String,
