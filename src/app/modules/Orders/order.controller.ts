@@ -34,6 +34,18 @@ const getAllOrders = catchAsync(async (req, res) => {
         data: order
     })
 });
+const changeStatus = catchAsync(async (req, res) => {
+    const {id}=req.params;
+    const{status}=req.body;
+    // console.log(status);
+    const order = await orderServices.changeStatus(status,id);
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: 'Status updated successfully',
+        statusCode: httpStatus.CREATED,
+        data: order
+    })
+});
 
 const getTotalSale = catchAsync(async (req, res) => {
     const order = await orderServices.getTodaysSale();
@@ -55,10 +67,22 @@ const getMyOrders = catchAsync(async (req, res) => {
         data: order
     })
 });
+const deleteOrder = catchAsync(async (req, res) => {
+    const {id}=req.params
+    const order = await orderServices.deleteOrder(id);
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: 'Order deleted successfully',
+        statusCode: httpStatus.CREATED,
+        data: order
+    })
+});
 export const orderController = {
     createOrderIntoDb,
     verifyPayment,
     getAllOrders,
     getTotalSale,
-    getMyOrders
+    getMyOrders,
+    changeStatus,
+    deleteOrder
 }

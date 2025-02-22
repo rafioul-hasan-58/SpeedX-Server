@@ -109,12 +109,12 @@ const verifyPayment = async (order_id: string) => {
     return verifiedPayment;
 };
 const getAllOrders = async () => {
-    const result = await Order.find()
+    const result = await Order.find().populate('product')
     return result
 }
 
-const getMyOrders=async(email:string)=>{
-    const result=await Order.find({email}).populate('product')
+const getMyOrders = async (email: string) => {
+    const result = await Order.find({ email }).populate('product')
     // console.log(result);
     return result
 }
@@ -131,10 +131,24 @@ const getTodaysSale = async () => {
     return { totalSale, items }
 }
 
+const changeStatus = async (status: string, orderId: string) => {
+    console.log(status,'now',orderId);
+    const result = await Order.findByIdAndUpdate(orderId, { status },{new:true})
+    console.log(result);
+    return result
+}
+const deleteOrder = async (id:string) => {
+    const result = await Order.findByIdAndDelete(id)
+    console.log(result);
+    return result
+}
+
 export const orderServices = {
     createOrderIntoDb,
     verifyPayment,
     getAllOrders,
     getTodaysSale,
-    getMyOrders
+    getMyOrders,
+    changeStatus,
+    deleteOrder
 }

@@ -7,6 +7,11 @@ const orderSchema = new Schema<IOrder>({
         required: [true, 'Product is required'],
         ref:'Product'
     },
+    status:{
+        type:String,
+        enum:['Pending','Cancelled','Delivered'],
+        default:'Pending'
+    },
     contact: {
         type: Number,
         required: [true, 'Contact is required']
