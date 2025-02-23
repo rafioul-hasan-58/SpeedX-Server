@@ -20,6 +20,7 @@ router.patch('/update-product/:id', upload.single('file'),
     }, auth(['admin', 'customer']), validateRequest(productValidations.updateProductValidationSchema), productController.updateProductIntoDb)
 
 router.get('/get-all-products', productController.getAllProductsFromDb)
+router.get('/get-available-stocks', productController.getAvailableStocks)
 router.get('/get-product/:id', productController.getSingleProductsFromDb)
 router.delete('/delete-product/:id', auth(['admin', 'customer']), productController.deleteProductsFromDb)
 

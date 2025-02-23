@@ -130,16 +130,20 @@ const getTodaysSale = async () => {
     // console.log(items, totalSale);
     return { totalSale, items }
 }
-
+const getTotalSale = async () => {
+    const orders = await Order.find()
+    const totalSale = orders.reduce((acc, order) => acc + (order.totalPrice ?? 0), 0)
+    const totalRevenue = Number(totalSale* 0.15)
+    return {
+        totalSale, totalRevenue
+    }
+}
 const changeStatus = async (status: string, orderId: string) => {
-    console.log(status,'now',orderId);
-    const result = await Order.findByIdAndUpdate(orderId, { status },{new:true})
-    console.log(result);
+    const result = await Order.findByIdAndUpdate(orderId, { status }, { new: true })
     return result
 }
-const deleteOrder = async (id:string) => {
+const deleteOrder = async (id: string) => {
     const result = await Order.findByIdAndDelete(id)
-    console.log(result);
     return result
 }
 
@@ -150,5 +154,6 @@ export const orderServices = {
     getTodaysSale,
     getMyOrders,
     changeStatus,
-    deleteOrder
+    deleteOrder,
+    getTotalSale
 }

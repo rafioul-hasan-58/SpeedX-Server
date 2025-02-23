@@ -32,7 +32,7 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
 })
 const updateUserIntoDb = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
-    console.log(req.file,'file');
+    // console.log(req.file,'file');
     const result = await userServices.updateUserIntoDb(req.body, id,req.file)
     res.status(httpStatus.OK).json({
         success: true,

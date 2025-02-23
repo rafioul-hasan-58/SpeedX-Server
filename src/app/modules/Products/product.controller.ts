@@ -15,7 +15,7 @@ const createProductIntoDb = catchAsync(async (req: Request, res: Response) => {
 })
 const updateProductIntoDb = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params
-    console.log(req.file, 'file');
+    // console.log(req.file, 'file');
     const result = await productServices.updateProductIntoDb(req.body, id, req.file)
     res.status(httpStatus.OK).json({
         success: true,
@@ -53,11 +53,21 @@ const deleteProductsFromDb = catchAsync(async (req: Request, res: Response) => {
         data: result
     })
 })
+const getAvailableStocks= catchAsync(async (req: Request, res: Response) => {
+    const result = await productServices.getAvailableStocks()
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: 'Stocks retrived successfully',
+        statusCode: 201,
+        data: result
+    })
+})
 
 export const productController = {
     createProductIntoDb,
     updateProductIntoDb,
     getAllProductsFromDb,
     getSingleProductsFromDb,
-    deleteProductsFromDb
+    deleteProductsFromDb,
+    getAvailableStocks
 }

@@ -48,10 +48,23 @@ const deleteProductFromDb = async (id: string) => {
     const result = await Product.findByIdAndDelete(id)
     return result
 }
+const getAvailableStocks = async () => {
+    const result = await Product.aggregate([
+        {
+            $group: {
+                _id: '$brandName',
+                totalStocks: { $sum: '$stocks' }
+            }
+        }
+    ])
+    return result
+}
+
 export const productServices = {
     createProductIntoDb,
     updateProductIntoDb,
     getAllProductsFromDb,
     getSingleProductFromDb,
-    deleteProductFromDb
+    deleteProductFromDb,
+    getAvailableStocks
 }

@@ -10,7 +10,7 @@ const userSchema = new Schema<IUser, UserModel>(
         },
         image: {
             type: String,
-            default: ''
+            default: 'https://i.ibb.co.com/7NZkW9fV/Head.jpg'
         },
         email: {
             type: String,
