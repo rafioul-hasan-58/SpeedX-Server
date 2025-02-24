@@ -26,13 +26,10 @@ const loginUser = async (payload: IUserLogin) => {
   const accessToken = createToken(
     jwtPayload,
     config.jwt_access_secret as string,
-    config.jwt_access_expires_in as string,
+    config.jwt_access_expires_in as `${number}s` | `${number}m` | `${number}h` | `${number}d`
   );
-  const refreshToken = createToken(
-    jwtPayload,
-    config.jwt_refresh_secret as string,
-    config.jwt_refresh_expires_in as string,
-  );
+  
+
 
   return {
     accessToken,
@@ -69,7 +66,7 @@ const refreshToken = async (token: string) => {
   const accessToken = createToken(
     jwtPayload,
     config.jwt_access_secret as string,
-    config.jwt_access_expires_in as string,
+    config.jwt_access_expires_in as `${number}s` | `${number}m` | `${number}h` | `${number}d`
   );
 
   return {

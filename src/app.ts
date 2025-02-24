@@ -14,12 +14,12 @@ const app: Application = express()
 // parser
 app.use(express.json())
 app.use(cookieParser());
-app.use(cors({ origin: ['http://localhost:5173','http://localhost:5174'] ,credentials:true}))
+app.use(cors({ origin: ['http://localhost:5173', 'my-forth-assignment-client.vercel.app'], credentials: true }))
 // routes
 app.use('/api/', router)
 // testing
 const test = async (req: Request, res: Response) => {
-  res.send('Ki Bara valoto?')
+  res.send('Server Running!!!')
 }
 app.get('/', test)
 
