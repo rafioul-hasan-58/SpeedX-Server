@@ -6,8 +6,6 @@ import { orderServices } from "./order.service"
 
 
 const createOrderIntoDb = catchAsync(async (req: Request, res: Response) => {
-    // console.log(user);
-    // console.log(req.body, req.user, req.ip);
     const result = await orderServices.createOrderIntoDb(req.body, req.user, req.ip!)
     res.status(httpStatus.OK).json({
         success: true,

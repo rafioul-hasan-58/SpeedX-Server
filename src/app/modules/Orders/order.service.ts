@@ -25,7 +25,6 @@ const createOrderIntoDb = async (payload: IOrder, user: any, client_ip: string) 
 
         const totalPrice = Number(quantity * productInfo.price);
         const currentUser = await User.findOne({ email: user.email }).session(session);
-        // console.log(currentUser, 'currentuser');
         const buyer = currentUser?._id?.toString();
 
         // Decrease stock but only if enough is available

@@ -15,32 +15,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.productServices = void 0;
 const QueryBuilder_1 = __importDefault(require("../../builder/QueryBuilder"));
 const AppError_1 = __importDefault(require("../../errors/AppError"));
-const sendImageToCloudinary_1 = require("../../utils/sendImageToCloudinary");
 const product_constant_1 = require("./product.constant");
 const product_model_1 = require("./product.model");
 const http_status_1 = __importDefault(require("http-status"));
-const createProductIntoDb = (payload, file) => __awaiter(void 0, void 0, void 0, function* () {
-    if (file) {
-        const imageName = `${payload === null || payload === void 0 ? void 0 : payload.model}${payload === null || payload === void 0 ? void 0 : payload.name}`;
-        const path = file === null || file === void 0 ? void 0 : file.path;
-        const { secure_url } = yield (0, sendImageToCloudinary_1.sendImageToCloudinary)(imageName, path);
-        // console.log(secure_url,'image');
-        payload.image = secure_url;
-    }
+const createProductIntoDb = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield product_model_1.Product.create(payload);
     return result;
 });
-const updateProductIntoDb = (payload, id, file) => __awaiter(void 0, void 0, void 0, function* () {
+const updateProductIntoDb = (payload, id) => __awaiter(void 0, void 0, void 0, function* () {
     const isProductExists = yield product_model_1.Product.findById(id);
     if (!isProductExists) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'The user could not found');
-    }
-    if (file) {
-        const imageName = `${payload === null || payload === void 0 ? void 0 : payload.model}${payload === null || payload === void 0 ? void 0 : payload.name}`;
-        const path = file === null || file === void 0 ? void 0 : file.path;
-        const { secure_url } = yield (0, sendImageToCloudinary_1.sendImageToCloudinary)(imageName, path);
-        // console.log(secure_url,'image');
-        payload.image = secure_url;
     }
     const result = yield product_model_1.Product.findByIdAndUpdate(id, payload);
     return result;

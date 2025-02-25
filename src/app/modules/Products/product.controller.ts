@@ -5,7 +5,7 @@ import { Request, Response } from "express"
 
 
 const createProductIntoDb = catchAsync(async (req: Request, res: Response) => {
-    const result = await productServices.createProductIntoDb(req.body, req.file)
+    const result = await productServices.createProductIntoDb(req.body)
     res.status(httpStatus.OK).json({
         success: true,
         message: 'Product added successfully',
@@ -16,7 +16,7 @@ const createProductIntoDb = catchAsync(async (req: Request, res: Response) => {
 const updateProductIntoDb = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params
     // console.log(req.file, 'file');
-    const result = await productServices.updateProductIntoDb(req.body, id, req.file)
+    const result = await productServices.updateProductIntoDb(req.body, id)
     res.status(httpStatus.OK).json({
         success: true,
         message: 'Product updated successfully',

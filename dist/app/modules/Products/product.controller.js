@@ -17,7 +17,7 @@ const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const http_status_1 = __importDefault(require("http-status"));
 const product_service_1 = require("./product.service");
 const createProductIntoDb = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield product_service_1.productServices.createProductIntoDb(req.body, req.file);
+    const result = yield product_service_1.productServices.createProductIntoDb(req.body);
     res.status(http_status_1.default.OK).json({
         success: true,
         message: 'Product added successfully',
@@ -28,7 +28,7 @@ const createProductIntoDb = (0, catchAsync_1.default)((req, res) => __awaiter(vo
 const updateProductIntoDb = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     // console.log(req.file, 'file');
-    const result = yield product_service_1.productServices.updateProductIntoDb(req.body, id, req.file);
+    const result = yield product_service_1.productServices.updateProductIntoDb(req.body, id);
     res.status(http_status_1.default.OK).json({
         success: true,
         message: 'Product updated successfully',

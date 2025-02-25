@@ -26,12 +26,12 @@ const app = (0, express_1.default)();
 // parser
 app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());
-app.use((0, cors_1.default)({ origin: ['http://localhost:5173', 'http://localhost:5174'], credentials: true }));
+app.use((0, cors_1.default)({ origin: ['http://localhost:5173', 'https://my-forth-assignment-client.vercel.app'], credentials: true }));
 // routes
 app.use('/api/', routes_1.default);
 // testing
 const test = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.send('Ki Bara valoto?');
+    res.send('Server Running!!!');
 });
 app.get('/', test);
 app.use(globalErrorHandler_1.default);

@@ -6,28 +6,14 @@ import { IProduct } from "./product.interface";
 import { Product } from "./product.model";
 import httpStatus from "http-status";
 
-const createProductIntoDb = async (payload: IProduct, file: any) => {
-    if (file) {
-        const imageName = `${payload?.model}${payload?.name}`;
-        const path = file?.path;
-        const { secure_url } = await sendImageToCloudinary(imageName, path);
-        // console.log(secure_url,'image');
-        payload.image = secure_url as string
-    }
+const createProductIntoDb = async (payload: IProduct) => {
     const result = await Product.create(payload);
     return result
 }
-const updateProductIntoDb = async (payload: Partial<IProduct>, id: string, file: any) => {
+const updateProductIntoDb = async (payload: Partial<IProduct>, id: string) => {
     const isProductExists = await Product.findById(id)
     if (!isProductExists) {
         throw new AppError(httpStatus.NOT_FOUND, 'The user could not found')
-    }
-    if (file) {
-        const imageName = `${payload?.model}${payload?.name}`;
-        const path = file?.path;
-        const { secure_url } = await sendImageToCloudinary(imageName, path);
-        // console.log(secure_url,'image');
-        payload.image = secure_url as string
     }
     const result = await Product.findByIdAndUpdate(id, payload)
     return result

@@ -14,7 +14,7 @@ const app: Application = express()
 // parser
 app.use(express.json())
 app.use(cookieParser());
-app.use(cors({ origin: ['http://localhost:5173', 'my-forth-assignment-client.vercel.app'], credentials: true }))
+app.use(cors({ origin: ['http://localhost:5173', 'https://my-forth-assignment-client.vercel.app'], credentials: true }))
 // routes
 app.use('/api/', router)
 // testing

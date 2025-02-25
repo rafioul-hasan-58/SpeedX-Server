@@ -7,17 +7,9 @@ import { upload } from "../../utils/sendImageToCloudinary";
 
 const router = Router()
 
-router.post('/add-product', upload.single('file'),
-    (req: Request, res: Response, next: NextFunction) => {
-        req.body = JSON.parse(req.body.data);
-        next();
-    }, validateRequest(productValidations.createProductValidationSchema), productController.createProductIntoDb)
+router.post('/add-product', validateRequest(productValidations.createProductValidationSchema), productController.createProductIntoDb)
 
-router.patch('/update-product/:id', upload.single('file'),
-    (req: Request, res: Response, next: NextFunction) => {
-        req.body = JSON.parse(req.body.data);
-        next();
-    }, auth(['admin', 'customer']), validateRequest(productValidations.updateProductValidationSchema), productController.updateProductIntoDb)
+router.patch('/update-product/:id', auth(['admin']), validateRequest(productValidations.updateProductValidationSchema), productController.updateProductIntoDb)
 
 router.get('/get-all-products', productController.getAllProductsFromDb)
 router.get('/get-available-stocks', productController.getAvailableStocks)
