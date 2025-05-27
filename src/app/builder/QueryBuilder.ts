@@ -39,44 +39,85 @@ class QueryBuilder<T> {
     // }
     // filter method
     filter() {
-        const filterByBrand = this?.query?.filterBybrand as string;
-        const filterByColor = this?.query?.filterBycolor as string;
-        const maxprice = this?.query?.maxPrice as number;
-        const minprice = this?.query?.minPrice as number;
-        // console.log(minprice, maxprice);
-        if (maxprice) {
-            this.modelQuery = this.modelQuery.find({
-                price: { $lte: maxprice }
-            })
+        const {
+            filterBybrand,
+            filterBycolor,
+            filterBytype,
+            maxPrice,
+            minPrice,
+            filterByBikeType
+        } = this.query;
+
+        const filterConditions: FilterQuery<T>[] = [];
+
+        if (filterBybrand) {
+            filterConditions.push({ brandName: filterBybrand });
         }
-        if (minprice) {
-            this.modelQuery = this.modelQuery.find({
-                price: { $gte: minprice }
-            })
+
+        if (filterBycolor) {
+            filterConditions.push({ color: filterBycolor });
         }
-        if (filterByBrand && filterByColor) {
-            this.modelQuery = this.modelQuery.find({
-                $and: [
-                    {
-                        brandName: filterByBrand
-                    },
-                    {
-                        color: filterByColor
-                    }
-                ]
-            })
+
+        if (filterBytype) {
+            filterConditions.push({ type: filterBytype });
         }
-        else if (filterByBrand) {
+        if (filterByBikeType) {
+            filterConditions.push({ bikeType: filterByBikeType });
+        }
+        if (minPrice || maxPrice) {
+            const priceCondition: any = {};
+            if (minPrice) priceCondition.$gte = Number(minPrice);
+            if (maxPrice) priceCondition.$lte = Number(maxPrice);
+            filterConditions.push({ price: priceCondition });
+        }
+        // console.log(filterConditions);
+        if (filterConditions.length > 0) {
             this.modelQuery = this.modelQuery.find({
-                brandName: filterByBrand
-            })
-        } else if (filterByColor) {
-            this.modelQuery = this.modelQuery.find({
-                color: filterByColor
-            })
+                $and: filterConditions,
+            });
         }
         return this
     }
+    // filter() {
+    //     const filterByBrand = this?.query?.filterBybrand as string;
+    //     const filterByColor = this?.query?.filterBycolor as string;
+    //     const maxprice = this?.query?.maxPrice as number;
+    //     const minprice = this?.query?.minPrice as number;
+    //     const type = this?.query?.filterBytype as string;
+    //     console.log(type);
+    //     if (maxprice) {
+    //         this.modelQuery = this.modelQuery.find({
+    //             price: { $lte: maxprice }
+    //         })
+    //     }
+    //     if (minprice) {
+    //         this.modelQuery = this.modelQuery.find({
+    //             price: { $gte: minprice }
+    //         })
+    //     }
+    //     if (filterByBrand && filterByColor) {
+    //         this.modelQuery = this.modelQuery.find({
+    //             $and: [
+    //                 {
+    //                     brandName: filterByBrand
+    //                 },
+    //                 {
+    //                     color: filterByColor
+    //                 }
+    //             ]
+    //         })
+    //     }
+    //     else if (filterByBrand) {
+    //         this.modelQuery = this.modelQuery.find({
+    //             brandName: filterByBrand
+    //         })
+    //     } else if (filterByColor) {
+    //         this.modelQuery = this.modelQuery.find({
+    //             color: filterByColor
+    //         })
+    //     }
+    //     return this
+    // }
 
 }
 

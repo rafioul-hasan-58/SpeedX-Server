@@ -1,12 +1,14 @@
 
-export interface IProduct{
-    name:string;
-    color:string;
-    brandName:string;
-    price:number;
-    description:string;
-    model:string;
-    stocks:number;
-    image?:string;
-    instock?:boolean;
+export interface IProduct {
+    name: string;
+    color: string;
+    brandName: string;
+    price: number;
+    description: string;
+    bikeType: 'scooter' | 'bike';
+    type: 'new' | 'used';
+    model: string;
+    stocks: number;
+    images: string[];
+    instock?: boolean;
 }

@@ -8,9 +8,8 @@ const productSchema = new Schema<IProduct>(
             type: String,
             required: [true, 'name is required']
         },
-        image: {
-            type: String,
-            default: ''
+        images: {
+            type: [String]
         }
         ,
         color: {
@@ -29,6 +28,15 @@ const productSchema = new Schema<IProduct>(
             type: String,
             required: [true, 'description is required']
         },
+        type:{
+            type:String,
+            default:'new'
+        },
+        bikeType: {
+            type: String,
+            enum: ['scooter', 'bike'],
+            required: [true, 'bike type is required']
+        },
         stocks: {
             type: Number,
             required: [true, 'stocks is required']
@@ -38,6 +46,6 @@ const productSchema = new Schema<IProduct>(
             default: true
         }
     }
-)
+);
 
-export const Product = model<IProduct>('Product', productSchema)
+export const Product = model<IProduct>('Product', productSchema);
