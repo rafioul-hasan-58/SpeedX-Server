@@ -10,32 +10,46 @@ const createOrderIntoDb = async (payload: IOrder, user: any, client_ip: string) 
     const session = await mongoose.startSession();
     session.startTransaction();
     try {
-        const { product, quantity } = payload;
+        const { items } = payload;
 
-        // Find product
-        const productInfo = await Product.findById(product).session(session);
-        if (!productInfo) {
-            throw new AppError(httpStatus.NOT_FOUND, 'Product not found');
+        // validate all products
+        const productIds = items.map((item) => item.product);
+        const products = await Product.find({ _id: { $in: productIds } }).session(session);
+
+        if (products.length !== items.length) {
+            throw new AppError(httpStatus.NOT_FOUND, "One or more products not found");
         }
+
+        let totalPrice = 0;
+
+        for (const item of items) {
+            const product = products.find(p => p._id.equals(item.product));
+            if (!product) {
+                throw new AppError(httpStatus.NOT_FOUND, `Product not found: ${item.product}`);
+            }
+            if (product.stocks < item.quantity) {
+                throw new AppError(httpStatus.BAD_REQUEST, `Not enough stock for ${product.name}`);
+            }
+            totalPrice += item.quantity * product.price;
+        }
+
 
         // Ensure enough stock is available
-        if (productInfo.stocks < quantity) {
-            throw new AppError(httpStatus.BAD_REQUEST, 'Not enough stock available');
-        }
 
-        const totalPrice = Number(quantity * productInfo.price);
         const currentUser = await User.findOne({ email: user.email }).session(session);
         const buyer = currentUser?._id?.toString();
 
-        // Decrease stock but only if enough is available
-        const updatedProduct = await Product.findOneAndUpdate(
-            { _id: product, stocks: { $gte: quantity } }, // Ensures enough stock
-            { $inc: { stocks: -quantity } },
-            { new: true, session }
-        );
+        // Decrease stock for each product
+        for (const item of items) {
+            const updated = await Product.findOneAndUpdate(
+                { _id: item.product, stocks: { $gte: item.quantity } },
+                { $inc: { stocks: -item.quantity } },
+                { session }
+            );
 
-        if (!updatedProduct) {
-            throw new AppError(httpStatus.BAD_REQUEST, 'Stock update failed, possibly due to insufficient stock');
+            if (!updated) {
+                throw new AppError(httpStatus.BAD_REQUEST, `Failed to update stock for product ${item.product}`);
+            }
         }
 
         // Create the order inside the transaction
@@ -76,6 +90,76 @@ const createOrderIntoDb = async (payload: IOrder, user: any, client_ip: string) 
         throw error;
     }
 };
+// const createOrderIntoDb = async (payload: IOrder, user: any, client_ip: string) => {
+//     const session = await mongoose.startSession();
+//     session.startTransaction();
+//     try {
+//         const { product, quantity } = payload;
+
+//         // Find product
+//         const productInfo = await Product.findById(product).session(session);
+//         if (!productInfo) {
+//             throw new AppError(httpStatus.NOT_FOUND, 'Product not found');
+//         }
+
+//         // Ensure enough stock is available
+//         if (productInfo.stocks < quantity) {
+//             throw new AppError(httpStatus.BAD_REQUEST, 'Not enough stock available');
+//         }
+
+//         const totalPrice = Number(quantity * productInfo.price);
+//         const currentUser = await User.findOne({ email: user.email }).session(session);
+//         const buyer = currentUser?._id?.toString();
+
+//         // Decrease stock but only if enough is available
+//         const updatedProduct = await Product.findOneAndUpdate(
+//             { _id: product, stocks: { $gte: quantity } }, // Ensures enough stock
+//             { $inc: { stocks: -quantity } },
+//             { new: true, session }
+//         );
+
+//         if (!updatedProduct) {
+//             throw new AppError(httpStatus.BAD_REQUEST, 'Stock update failed, possibly due to insufficient stock');
+//         }
+
+//         // Create the order inside the transaction
+//         let [order] = await Order.create([{ ...payload, totalPrice, buyer }], { session });
+
+//         // Payment integration
+//         const shurjopayPayload = {
+//             amount: totalPrice,
+//             order_id: order._id,
+//             currency: "BDT",
+//             customer_name: currentUser?.name,
+//             customer_address: payload.address,
+//             customer_email: currentUser?.email,
+//             customer_phone: String(payload.contact),
+//             customer_city: payload.address,
+//             client_ip,
+//         };
+
+//         const payment = await orderUtils.makePaymentAsync(shurjopayPayload);
+
+//         if (payment?.transactionStatus) {
+//             await Order.findByIdAndUpdate(order._id, {
+//                 transaction: {
+//                     id: payment.sp_order_id,
+//                     transactionStatus: payment.transactionStatus,
+//                 },
+//             }).session(session);
+//         }
+
+//         await session.commitTransaction();
+//         session.endSession();
+
+//         return { payment, order }
+//     } catch (error) {
+//         // Rollback transaction if something goes wrong
+//         await session.abortTransaction();
+//         session.endSession();
+//         throw error;
+//     }
+// };
 const verifyPayment = async (order_id: string) => {
     const verifiedPayment = await orderUtils.verifyPaymentAsync(order_id);
 
@@ -132,7 +216,7 @@ const getTodaysSale = async () => {
 const getTotalSale = async () => {
     const orders = await Order.find()
     const totalSale = orders.reduce((acc, order) => acc + (order.totalPrice ?? 0), 0)
-    const totalRevenue = Number(totalSale* 0.15)
+    const totalRevenue = Number(totalSale * 0.15)
     return {
         totalSale, totalRevenue
     }

@@ -22,18 +22,6 @@ const makePaymentAsync = (paymentPayload) => __awaiter(void 0, void 0, void 0, f
     return new Promise((resolve, reject) => {
         shurjopay.makePayment(paymentPayload, (response) => resolve(response), (error) => reject(error));
     });
-    //   const paymentResult = await shurjopay.makePayment(
-    //     paymentPayload,
-    //     (response) => {
-    //       sendResponse(res, {
-    //         statusCode: 200,
-    //         message: "Order placed successfully",
-    //         data: response,
-    //       });
-    //     },
-    //     (error) => console.log(error)
-    //   );
-    //   return paymentResult;
 });
 const verifyPaymentAsync = (order_id) => {
     return new Promise((resolve, reject) => {

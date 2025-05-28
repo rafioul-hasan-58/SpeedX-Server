@@ -36,11 +36,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Order = void 0;
 const mongoose_1 = __importStar(require("mongoose"));
 const orderSchema = new mongoose_1.Schema({
-    product: {
-        type: mongoose_1.default.Schema.ObjectId,
-        required: [true, 'Product is required'],
-        ref: 'Product'
-    },
+    items: [
+        {
+            product: {
+                type: mongoose_1.default.Schema.Types.ObjectId,
+                required: [true, "Product is required"],
+                ref: "Product"
+            },
+            quantity: {
+                type: Number,
+                required: [true, "Quantity is required"],
+                default: 1
+            }
+        }
+    ],
     status: {
         type: String,
         enum: ['Pending', 'Cancelled', 'Delivered'],
@@ -49,10 +58,6 @@ const orderSchema = new mongoose_1.Schema({
     contact: {
         type: Number,
         required: [true, 'Contact is required']
-    },
-    quantity: {
-        type: Number,
-        required: [true, 'Quantity is required']
     },
     totalPrice: {
         type: Number,

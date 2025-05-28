@@ -16,8 +16,8 @@ exports.productController = void 0;
 const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const http_status_1 = __importDefault(require("http-status"));
 const product_service_1 = require("./product.service");
-const createProductIntoDb = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield product_service_1.productServices.createProductIntoDb(req.body);
+const createProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield product_service_1.productServices.createProduct(req.body);
     res.status(http_status_1.default.OK).json({
         success: true,
         message: 'Product added successfully',
@@ -25,10 +25,10 @@ const createProductIntoDb = (0, catchAsync_1.default)((req, res) => __awaiter(vo
         data: result
     });
 }));
-const updateProductIntoDb = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const updateProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     // console.log(req.file, 'file');
-    const result = yield product_service_1.productServices.updateProductIntoDb(req.body, id);
+    const result = yield product_service_1.productServices.updateProduct(req.body, id);
     res.status(http_status_1.default.OK).json({
         success: true,
         message: 'Product updated successfully',
@@ -36,18 +36,28 @@ const updateProductIntoDb = (0, catchAsync_1.default)((req, res) => __awaiter(vo
         data: result
     });
 }));
-const getAllProductsFromDb = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield product_service_1.productServices.getAllProductsFromDb(req.query);
+const removeImage = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const result = yield product_service_1.productServices.removeImage(id, req.body.image);
     res.status(http_status_1.default.OK).json({
         success: true,
-        message: 'All Products retrived successfully',
+        message: 'Image removed successfully',
         statusCode: 201,
         data: result
     });
 }));
-const getSingleProductsFromDb = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllProducts = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield product_service_1.productServices.getAllProducts(req.query);
+    res.status(http_status_1.default.OK).json({
+        success: true,
+        message: 'Product retrived successfully',
+        data: result.data,
+        meta: result.meta
+    });
+}));
+const getSingleProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const result = yield product_service_1.productServices.getSingleProductFromDb(id);
+    const result = yield product_service_1.productServices.getSingleProduct(id);
     res.status(http_status_1.default.OK).json({
         success: true,
         message: 'Single product retrived successfully',
@@ -55,9 +65,9 @@ const getSingleProductsFromDb = (0, catchAsync_1.default)((req, res) => __awaite
         data: result
     });
 }));
-const deleteProductsFromDb = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const deleteProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    const result = yield product_service_1.productServices.deleteProductFromDb(id);
+    const result = yield product_service_1.productServices.deleteProduct(id);
     res.status(http_status_1.default.OK).json({
         success: true,
         message: 'Product deleted successfully',
@@ -75,10 +85,11 @@ const getAvailableStocks = (0, catchAsync_1.default)((req, res) => __awaiter(voi
     });
 }));
 exports.productController = {
-    createProductIntoDb,
-    updateProductIntoDb,
-    getAllProductsFromDb,
-    getSingleProductsFromDb,
-    deleteProductsFromDb,
-    getAvailableStocks
+    createProduct,
+    updateProduct,
+    getAllProducts,
+    getSingleProduct,
+    deleteProduct,
+    getAvailableStocks,
+    removeImage
 };

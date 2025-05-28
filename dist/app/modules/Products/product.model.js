@@ -7,9 +7,8 @@ const productSchema = new mongoose_1.Schema({
         type: String,
         required: [true, 'name is required']
     },
-    image: {
-        type: String,
-        default: ''
+    images: {
+        type: [String]
     },
     color: {
         type: String,
@@ -26,6 +25,15 @@ const productSchema = new mongoose_1.Schema({
     description: {
         type: String,
         required: [true, 'description is required']
+    },
+    type: {
+        type: String,
+        default: 'new'
+    },
+    bikeType: {
+        type: String,
+        enum: ['scooter', 'bike'],
+        required: [true, 'bike type is required']
     },
     stocks: {
         type: Number,

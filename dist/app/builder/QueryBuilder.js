@@ -35,42 +35,32 @@ class QueryBuilder {
     // }
     // filter method
     filter() {
-        var _a, _b, _c, _d;
-        const filterByBrand = (_a = this === null || this === void 0 ? void 0 : this.query) === null || _a === void 0 ? void 0 : _a.filterBybrand;
-        const filterByColor = (_b = this === null || this === void 0 ? void 0 : this.query) === null || _b === void 0 ? void 0 : _b.filterBycolor;
-        const maxprice = (_c = this === null || this === void 0 ? void 0 : this.query) === null || _c === void 0 ? void 0 : _c.maxPrice;
-        const minprice = (_d = this === null || this === void 0 ? void 0 : this.query) === null || _d === void 0 ? void 0 : _d.minPrice;
-        // console.log(minprice, maxprice);
-        if (maxprice) {
-            this.modelQuery = this.modelQuery.find({
-                price: { $lte: maxprice }
-            });
+        const { filterBybrand, filterBycolor, filterBytype, maxPrice, minPrice, filterByBikeType } = this.query;
+        const filterConditions = [];
+        if (filterBybrand) {
+            filterConditions.push({ brandName: filterBybrand });
         }
-        if (minprice) {
-            this.modelQuery = this.modelQuery.find({
-                price: { $gte: minprice }
-            });
+        if (filterBycolor) {
+            filterConditions.push({ color: filterBycolor });
         }
-        if (filterByBrand && filterByColor) {
-            this.modelQuery = this.modelQuery.find({
-                $and: [
-                    {
-                        brandName: filterByBrand
-                    },
-                    {
-                        color: filterByColor
-                    }
-                ]
-            });
+        if (filterBytype) {
+            filterConditions.push({ type: filterBytype });
         }
-        else if (filterByBrand) {
-            this.modelQuery = this.modelQuery.find({
-                brandName: filterByBrand
-            });
+        if (filterByBikeType) {
+            filterConditions.push({ bikeType: filterByBikeType });
         }
-        else if (filterByColor) {
+        if (minPrice || maxPrice) {
+            const priceCondition = {};
+            if (minPrice)
+                priceCondition.$gte = Number(minPrice);
+            if (maxPrice)
+                priceCondition.$lte = Number(maxPrice);
+            filterConditions.push({ price: priceCondition });
+        }
+        // console.log(filterConditions);
+        if (filterConditions.length > 0) {
             this.modelQuery = this.modelQuery.find({
-                color: filterByColor
+                $and: filterConditions,
             });
         }
         return this;
