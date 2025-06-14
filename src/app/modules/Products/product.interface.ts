@@ -11,4 +11,5 @@ export interface IProduct {
     stocks: number;
     images: string[];
     instock?: boolean;
+    addedBy: string;
 }

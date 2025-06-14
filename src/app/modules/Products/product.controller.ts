@@ -43,6 +43,16 @@ const getAllProducts = catchAsync(async (req: Request, res: Response) => {
         meta: result.meta
     })
 })
+const getMyProducts = catchAsync(async (req: Request, res: Response) => {
+    const { email } = req.params
+    const result = await productServices.getMyProducts(email);
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: 'My added products retrived successfully',
+        statusCode: 201,
+        data: result
+    })
+})
 const getSingleProduct = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params
     const result = await productServices.getSingleProduct(id)
@@ -80,5 +90,6 @@ export const productController = {
     getSingleProduct,
     deleteProduct,
     getAvailableStocks,
-    removeImage
+    removeImage,
+    getMyProducts
 }

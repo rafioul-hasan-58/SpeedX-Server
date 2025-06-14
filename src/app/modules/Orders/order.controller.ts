@@ -33,10 +33,10 @@ const getAllOrders = catchAsync(async (req, res) => {
     })
 });
 const changeStatus = catchAsync(async (req, res) => {
-    const {id}=req.params;
-    const{status}=req.body;
+    const { id } = req.params;
+    const { status } = req.body;
     // console.log(status);
-    const order = await orderServices.changeStatus(status,id);
+    const order = await orderServices.changeStatus(status, id);
     res.status(httpStatus.OK).json({
         success: true,
         message: 'Status updated successfully',
@@ -64,9 +64,8 @@ const getTotalSale = catchAsync(async (req, res) => {
     })
 });
 const getMyOrders = catchAsync(async (req, res) => {
-    const {email}=req.user
+    const { email } = req.user;
     const order = await orderServices.getMyOrders(email);
-    // console.log(order);
     res.status(httpStatus.OK).json({
         success: true,
         message: 'My order retrived successfully',
@@ -75,7 +74,7 @@ const getMyOrders = catchAsync(async (req, res) => {
     })
 });
 const deleteOrder = catchAsync(async (req, res) => {
-    const {id}=req.params
+    const { id } = req.params
     const order = await orderServices.deleteOrder(id);
     res.status(httpStatus.OK).json({
         success: true,

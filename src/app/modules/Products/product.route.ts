@@ -15,17 +15,22 @@ router.post(
 
 router.patch(
     '/update-product/:id',
-    auth(['admin']),
+    auth(['admin','customer']),
     validateRequest(productValidations.updateProductValidationSchema),
     productController.updateProduct
 );
 router.patch(
-    '/remove-product-image',
+    '/remove-product-image/:id',
+    // auth(['admin','customer']),
     productController.removeImage
 );
 router.get(
     '/get-all-products',
     productController.getAllProducts
+);
+router.get(
+    '/get-my-added-products/:email',
+    productController.getMyProducts
 );
 router.get(
     '/get-available-stocks',

@@ -197,7 +197,7 @@ const getAllOrders = async () => {
 }
 
 const getMyOrders = async (email: string) => {
-    const result = await Order.find({ email }).populate('product')
+    const result = await Order.find({ email }).populate('items.product');
     // console.log(result);
     return result
 }

@@ -28,9 +28,9 @@ const productSchema = new Schema<IProduct>(
             type: String,
             required: [true, 'description is required']
         },
-        type:{
-            type:String,
-            default:'new'
+        type: {
+            type: String,
+            default: 'new'
         },
         bikeType: {
             type: String,
@@ -44,6 +44,10 @@ const productSchema = new Schema<IProduct>(
         instock: {
             type: Boolean,
             default: true
+        },
+        addedBy: {
+            type: String,
+            default: ''
         }
     }
 );
