@@ -191,19 +191,47 @@ const verifyPayment = async (order_id: string) => {
 
     return verifiedPayment;
 };
-const getAllOrders = async (filters?: { email?: string, status?: string }) => {
+
+const getAllOrders = async (filters?: {
+    email?: string,
+    status?: string,
+    page?: number,
+    limit?: number
+}) => {
     const query: any = {};
+
     if (filters?.email) {
-        query.email = filters.email
+        query.email = filters.email;
     }
+
     if (filters?.status) {
-        query.status = filters.status
+        query.status = filters.status;
     }
-    const result = await Order.find(query)
+
+    const page = Number(filters?.page) || 1;
+    const limit = Number(filters?.limit) || 6;
+    const skip = (page - 1) * limit;
+
+    const total = await Order.countDocuments(query); // total matching documents
+
+    const orders = await Order.find(query)
+        .skip(skip)
+        .limit(limit)
+        .sort({ createdAt: -1 }) // newest first
         .populate('items.product')
-        .populate('buyer')
-    return result
-}
+        .populate('buyer');
+
+    return {
+        data: orders,
+        meta: {
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit),
+        },
+    };
+};
+
 
 const getMyOrders = async (email: string) => {
     const result = await Order.find({ email }).populate('items.product');

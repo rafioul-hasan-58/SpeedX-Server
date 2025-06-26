@@ -29,7 +29,8 @@ const getAllOrders = catchAsync(async (req, res) => {
         success: true,
         message: 'Order retrived successfully',
         statusCode: httpStatus.CREATED,
-        data: order
+        meta: order.meta,
+        data: order.data
     })
 });
 const changeStatus = catchAsync(async (req, res) => {

@@ -40,7 +40,8 @@ const getAllOrders = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
         success: true,
         message: 'Order retrived successfully',
         statusCode: http_status_1.default.CREATED,
-        data: order
+        meta: order.meta,
+        data: order.data
     });
 }));
 const changeStatus = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {

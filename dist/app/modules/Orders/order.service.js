@@ -178,10 +178,25 @@ const getAllOrders = (filters) => __awaiter(void 0, void 0, void 0, function* ()
     if (filters === null || filters === void 0 ? void 0 : filters.status) {
         query.status = filters.status;
     }
-    const result = yield order_model_1.Order.find(query)
+    const page = Number(filters === null || filters === void 0 ? void 0 : filters.page) || 1;
+    const limit = Number(filters === null || filters === void 0 ? void 0 : filters.limit) || 6;
+    const skip = (page - 1) * limit;
+    const total = yield order_model_1.Order.countDocuments(query); // total matching documents
+    const orders = yield order_model_1.Order.find(query)
+        .skip(skip)
+        .limit(limit)
+        .sort({ createdAt: -1 }) // newest first
         .populate('items.product')
         .populate('buyer');
-    return result;
+    return {
+        data: orders,
+        meta: {
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit),
+        },
+    };
 });
 const getMyOrders = (email) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield order_model_1.Order.find({ email }).populate('items.product');
