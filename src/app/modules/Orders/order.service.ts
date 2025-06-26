@@ -191,8 +191,17 @@ const verifyPayment = async (order_id: string) => {
 
     return verifiedPayment;
 };
-const getAllOrders = async () => {
-    const result = await Order.find().populate('product')
+const getAllOrders = async (filters?: { email?: string, status?: string }) => {
+    const query: any = {};
+    if (filters?.email) {
+        query.email = filters.email
+    }
+    if (filters?.status) {
+        query.status = filters.status
+    }
+    const result = await Order.find(query)
+        .populate('items.product')
+        .populate('buyer')
     return result
 }
 

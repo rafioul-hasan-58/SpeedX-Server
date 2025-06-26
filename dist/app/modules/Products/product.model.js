@@ -42,6 +42,10 @@ const productSchema = new mongoose_1.Schema({
     instock: {
         type: Boolean,
         default: true
+    },
+    addedBy: {
+        type: String,
+        default: ''
     }
 });
 exports.Product = (0, mongoose_1.model)('Product', productSchema);

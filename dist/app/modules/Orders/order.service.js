@@ -170,12 +170,21 @@ const verifyPayment = (order_id) => __awaiter(void 0, void 0, void 0, function* 
     // console.log(verifiedPayment);
     return verifiedPayment;
 });
-const getAllOrders = () => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield order_model_1.Order.find().populate('product');
+const getAllOrders = (filters) => __awaiter(void 0, void 0, void 0, function* () {
+    const query = {};
+    if (filters === null || filters === void 0 ? void 0 : filters.email) {
+        query.email = filters.email;
+    }
+    if (filters === null || filters === void 0 ? void 0 : filters.status) {
+        query.status = filters.status;
+    }
+    const result = yield order_model_1.Order.find(query)
+        .populate('items.product')
+        .populate('buyer');
     return result;
 });
 const getMyOrders = (email) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield order_model_1.Order.find({ email }).populate('product');
+    const result = yield order_model_1.Order.find({ email }).populate('items.product');
     // console.log(result);
     return result;
 });

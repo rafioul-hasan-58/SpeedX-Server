@@ -78,46 +78,6 @@ class QueryBuilder<T> {
         }
         return this
     }
-    // filter() {
-    //     const filterByBrand = this?.query?.filterBybrand as string;
-    //     const filterByColor = this?.query?.filterBycolor as string;
-    //     const maxprice = this?.query?.maxPrice as number;
-    //     const minprice = this?.query?.minPrice as number;
-    //     const type = this?.query?.filterBytype as string;
-    //     console.log(type);
-    //     if (maxprice) {
-    //         this.modelQuery = this.modelQuery.find({
-    //             price: { $lte: maxprice }
-    //         })
-    //     }
-    //     if (minprice) {
-    //         this.modelQuery = this.modelQuery.find({
-    //             price: { $gte: minprice }
-    //         })
-    //     }
-    //     if (filterByBrand && filterByColor) {
-    //         this.modelQuery = this.modelQuery.find({
-    //             $and: [
-    //                 {
-    //                     brandName: filterByBrand
-    //                 },
-    //                 {
-    //                     color: filterByColor
-    //                 }
-    //             ]
-    //         })
-    //     }
-    //     else if (filterByBrand) {
-    //         this.modelQuery = this.modelQuery.find({
-    //             brandName: filterByBrand
-    //         })
-    //     } else if (filterByColor) {
-    //         this.modelQuery = this.modelQuery.find({
-    //             color: filterByColor
-    //         })
-    //     }
-    //     return this
-    // }
 
 }
 

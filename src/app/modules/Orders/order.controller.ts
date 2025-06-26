@@ -24,7 +24,7 @@ const verifyPayment = catchAsync(async (req, res) => {
     })
 });
 const getAllOrders = catchAsync(async (req, res) => {
-    const order = await orderServices.getAllOrders();
+    const order = await orderServices.getAllOrders(req.query);
     res.status(httpStatus.OK).json({
         success: true,
         message: 'Order retrived successfully',

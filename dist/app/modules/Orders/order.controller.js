@@ -35,7 +35,7 @@ const verifyPayment = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
     });
 }));
 const getAllOrders = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const order = yield order_service_1.orderServices.getAllOrders();
+    const order = yield order_service_1.orderServices.getAllOrders(req.query);
     res.status(http_status_1.default.OK).json({
         success: true,
         message: 'Order retrived successfully',
@@ -76,7 +76,6 @@ const getTotalSale = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
 const getMyOrders = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email } = req.user;
     const order = yield order_service_1.orderServices.getMyOrders(email);
-    // console.log(order);
     res.status(http_status_1.default.OK).json({
         success: true,
         message: 'My order retrived successfully',

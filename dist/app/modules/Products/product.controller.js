@@ -51,8 +51,19 @@ const getAllProducts = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
     res.status(http_status_1.default.OK).json({
         success: true,
         message: 'Product retrived successfully',
-        data: result.data,
-        meta: result.meta
+        meta: result.meta,
+        data: result.data
+    });
+}));
+const getMyProducts = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email } = req.body;
+    const result = yield product_service_1.productServices.getMyProducts(req.query, email);
+    res.status(http_status_1.default.OK).json({
+        success: true,
+        message: 'My added products retrived successfully',
+        statusCode: 201,
+        meta: result.meta,
+        data: result.data
     });
 }));
 const getSingleProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -91,5 +102,6 @@ exports.productController = {
     getSingleProduct,
     deleteProduct,
     getAvailableStocks,
-    removeImage
+    removeImage,
+    getMyProducts
 };

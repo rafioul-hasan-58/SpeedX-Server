@@ -29,7 +29,7 @@ router.get(
     productController.getAllProducts
 );
 router.get(
-    '/get-my-added-products/:email',
+    '/get-my-added-products',
     productController.getMyProducts
 );
 router.get(

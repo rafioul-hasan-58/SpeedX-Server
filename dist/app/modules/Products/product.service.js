@@ -32,21 +32,52 @@ const updateProduct = (payload, id) => __awaiter(void 0, void 0, void 0, functio
 });
 const getAllProducts = (query) => __awaiter(void 0, void 0, void 0, function* () {
     const page = Number(query.page) || 1;
-    const limit = Number(query.limit) || 8;
+    const limit = Number(query.limit) || 6;
     const skip = (page - 1) * limit;
+    // Build query with filters/search
     const productQuery = new QueryBuilder_1.default(product_model_1.Product.find(), query)
         .filter()
         .search(product_constant_1.productSearchableFields);
-    const result = yield productQuery.modelQuery;
-    const total = yield product_model_1.Product.countDocuments(productQuery.query);
+    // Count total BEFORE pagination
+    const total = yield product_model_1.Product.countDocuments(productQuery.modelQuery.getFilter());
+    // Apply pagination NOW
     productQuery.modelQuery = productQuery.modelQuery.skip(skip).limit(limit);
+    const totalPage = Math.ceil(total / limit);
+    // Execute final paginated query
+    const result = yield productQuery.modelQuery;
     return {
         data: result,
         meta: {
             total,
             page,
-            limit
-        }
+            limit,
+            totalPage
+        },
+    };
+});
+const getMyProducts = (query, email) => __awaiter(void 0, void 0, void 0, function* () {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 6;
+    const skip = (page - 1) * limit;
+    // Build query with filters/search
+    const productQuery = new QueryBuilder_1.default(product_model_1.Product.find({ addedBy: email }), query)
+        .filter()
+        .search(product_constant_1.productSearchableFields);
+    // Count total BEFORE pagination
+    const total = yield product_model_1.Product.countDocuments(productQuery.modelQuery.getFilter());
+    // Apply pagination NOW
+    productQuery.modelQuery = productQuery.modelQuery.skip(skip).limit(limit);
+    const totalPage = Math.ceil(total / limit);
+    // Execute final paginated query
+    const result = yield productQuery.modelQuery;
+    return {
+        data: result,
+        meta: {
+            total,
+            page,
+            limit,
+            totalPage
+        },
     };
 });
 const getSingleProduct = (id) => __awaiter(void 0, void 0, void 0, function* () {
@@ -82,5 +113,6 @@ exports.productServices = {
     getSingleProduct,
     deleteProduct,
     getAvailableStocks,
-    removeImage
+    removeImage,
+    getMyProducts
 };

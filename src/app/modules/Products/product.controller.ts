@@ -39,18 +39,20 @@ const getAllProducts = catchAsync(async (req: Request, res: Response) => {
     res.status(httpStatus.OK).json({
         success: true,
         message: 'Product retrived successfully',
-        data: result.data,
-        meta: result.meta
+        meta: result.meta,
+        data: result.data
+
     })
 })
 const getMyProducts = catchAsync(async (req: Request, res: Response) => {
-    const { email } = req.params
-    const result = await productServices.getMyProducts(email);
+    const { email } = req.body;
+    const result = await productServices.getMyProducts(req.query, email);
     res.status(httpStatus.OK).json({
         success: true,
         message: 'My added products retrived successfully',
         statusCode: 201,
-        data: result
+        meta: result.meta,
+        data: result.data
     })
 })
 const getSingleProduct = catchAsync(async (req: Request, res: Response) => {

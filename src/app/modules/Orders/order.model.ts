@@ -29,7 +29,8 @@ const orderSchema = new Schema<IOrder>({
         type: Number,
     },
     buyer: {
-        type: mongoose.Schema.ObjectId
+        type: mongoose.Schema.ObjectId,
+        ref: 'User'
     },
     email: {
         type: String

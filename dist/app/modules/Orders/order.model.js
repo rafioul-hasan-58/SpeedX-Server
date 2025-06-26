@@ -63,7 +63,8 @@ const orderSchema = new mongoose_1.Schema({
         type: Number,
     },
     buyer: {
-        type: mongoose_1.default.Schema.ObjectId
+        type: mongoose_1.default.Schema.ObjectId,
+        ref: 'User'
     },
     email: {
         type: String

@@ -17,30 +17,10 @@ const updateProduct = async (payload: Partial<IProduct>, id: string) => {
     const result = await Product.findByIdAndUpdate(id, payload);
     return result
 }
-// const getAllProducts = async (query: Record<string, unknown>) => {
-//     const page = Number(query.page) || 1;
-//     const limit = Number(query.limit) || 8;
-//     const skip = (page - 1) * limit;
-//     const productQuery = new QueryBuilder(Product.find(), query)
-//         .filter()
-//         .search(productSearchableFields);
 
-//     const result = await productQuery.modelQuery;
-
-//     const total = await Product.countDocuments(productQuery.query);
-//     productQuery.modelQuery = productQuery.modelQuery.skip(skip).limit(limit);
-//     return {
-//         data: result,
-//         meta: {
-//             total,
-//             page,
-//             limit
-//         }
-//     }
-// }
 const getAllProducts = async (query: Record<string, unknown>) => {
     const page = Number(query.page) || 1;
-    const limit = Number(query.limit) || 8;
+    const limit = Number(query.limit) || 6;
     const skip = (page - 1) * limit;
 
     // Build query with filters/search
@@ -49,7 +29,37 @@ const getAllProducts = async (query: Record<string, unknown>) => {
         .search(productSearchableFields);
 
     // Count total BEFORE pagination
-    const total = await Product.countDocuments(productQuery.query);
+    const total = await Product.countDocuments(productQuery.modelQuery.getFilter());
+
+    // Apply pagination NOW
+    productQuery.modelQuery = productQuery.modelQuery.skip(skip).limit(limit);
+    const totalPage = Math.ceil(total / limit);
+
+    // Execute final paginated query
+    const result = await productQuery.modelQuery;
+
+    return {
+        data: result,
+        meta: {
+            total,
+            page,
+            limit,
+            totalPage
+        },
+    };
+};
+const getMyProducts = async (query: Record<string, unknown>, email: string) => {
+    const page = Number(query.page) || 1;
+    const limit = Number(query.limit) || 6;
+    const skip = (page - 1) * limit;
+
+    // Build query with filters/search
+    const productQuery = new QueryBuilder(Product.find({ addedBy: email }), query)
+        .filter()
+        .search(productSearchableFields);
+
+    // Count total BEFORE pagination
+    const total = await Product.countDocuments(productQuery.modelQuery.getFilter());
 
     // Apply pagination NOW
     productQuery.modelQuery = productQuery.modelQuery.skip(skip).limit(limit);
@@ -69,10 +79,7 @@ const getAllProducts = async (query: Record<string, unknown>) => {
     };
 };
 
-const getMyProducts = async (email: string) => {
-    const result = await Product.find({ addedBy: email });
-    return result
-}
+
 const getSingleProduct = async (id: string) => {
     const result = await Product.findById(id);
     return result
