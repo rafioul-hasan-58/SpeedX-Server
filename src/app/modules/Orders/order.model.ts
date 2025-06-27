@@ -18,7 +18,7 @@ const orderSchema = new Schema<IOrder>({
     ],
     status: {
         type: String,
-        enum: ['Pending', 'Cancelled', 'Delivered'],
+        enum: ['Pending', 'Cancelled', 'Delivered','Processing','Shipped','Returned'],
         default: 'Pending'
     },
     contact: {
@@ -34,6 +34,9 @@ const orderSchema = new Schema<IOrder>({
     },
     email: {
         type: String
+    },
+    sellerEmail:{
+        type:String
     },
     address: {
         type: String,

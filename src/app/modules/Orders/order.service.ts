@@ -11,7 +11,10 @@ const createOrderIntoDb = async (payload: IOrder, user: any, client_ip: string) 
     session.startTransaction();
     try {
         const { items } = payload;
-
+        const sellerEmail = await Product.findById(items[0].product);
+        if (sellerEmail?.addedBy) {
+            payload.sellerEmail = sellerEmail?.addedBy;
+        }
         // validate all products
         const productIds = items.map((item) => item.product);
         const products = await Product.find({ _id: { $in: productIds } }).session(session);

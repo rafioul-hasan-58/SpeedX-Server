@@ -16,5 +16,6 @@ export interface IOrder {
     address: string;
     email: string;
     contact: number;
+    sellerEmail: string;
     orderNote?: string;
 }
