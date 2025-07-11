@@ -236,11 +236,29 @@ const getAllOrders = async (filters?: {
 };
 
 
-const getMyOrders = async (email: string) => {
-    const result = await Order.find({ email }).populate('items.product');
-    // console.log(result);
-    return result
-}
+const getMyOrders = async (
+    filters?: {
+        email?: string,
+        filterBy?: 'buyer' | 'seller',
+        status?: string,
+        page?: number,
+        limit?: number
+    }
+) => {
+    const query: any = {};
+    if (filters?.email && filters.filterBy === 'seller') {
+        query.sellerEmail = filters.email
+    }
+    if (filters?.email && filters.filterBy === 'buyer') {
+        query.email = filters.email
+    }
+    
+    if (filters?.status) {
+        query.status = filters.status;
+    }
+    const result = await Order.find(query).populate('items.product').populate('buyer');
+    return result;
+};
 const getTodaysSale = async () => {
     const date = new Date();
     const startOfDay = new Date(date.setHours(0, 0, 0, 0));

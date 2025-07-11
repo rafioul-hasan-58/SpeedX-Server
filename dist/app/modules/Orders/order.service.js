@@ -26,6 +26,10 @@ const createOrderIntoDb = (payload, user, client_ip) => __awaiter(void 0, void 0
     session.startTransaction();
     try {
         const { items } = payload;
+        const sellerEmail = yield product_model_1.Product.findById(items[0].product);
+        if (sellerEmail === null || sellerEmail === void 0 ? void 0 : sellerEmail.addedBy) {
+            payload.sellerEmail = sellerEmail === null || sellerEmail === void 0 ? void 0 : sellerEmail.addedBy;
+        }
         // validate all products
         const productIds = items.map((item) => item.product);
         const products = yield product_model_1.Product.find({ _id: { $in: productIds } }).session(session);
@@ -198,9 +202,18 @@ const getAllOrders = (filters) => __awaiter(void 0, void 0, void 0, function* ()
         },
     };
 });
-const getMyOrders = (email) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield order_model_1.Order.find({ email }).populate('items.product');
-    // console.log(result);
+const getMyOrders = (filters) => __awaiter(void 0, void 0, void 0, function* () {
+    const query = {};
+    if ((filters === null || filters === void 0 ? void 0 : filters.email) && filters.filterBy === 'seller') {
+        query.sellerEmail = filters.email;
+    }
+    if ((filters === null || filters === void 0 ? void 0 : filters.email) && filters.filterBy === 'buyer') {
+        query.email = filters.email;
+    }
+    if (filters === null || filters === void 0 ? void 0 : filters.status) {
+        query.status = filters.status;
+    }
+    const result = yield order_model_1.Order.find(query).populate('items.product').populate('buyer');
     return result;
 });
 const getTodaysSale = () => __awaiter(void 0, void 0, void 0, function* () {

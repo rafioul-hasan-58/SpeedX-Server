@@ -69,6 +69,9 @@ const orderSchema = new mongoose_1.Schema({
     email: {
         type: String
     },
+    sellerEmail: {
+        type: String
+    },
     address: {
         type: String,
         required: [true, 'Address is required']

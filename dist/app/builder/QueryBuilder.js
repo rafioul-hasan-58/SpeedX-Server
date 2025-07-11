@@ -37,6 +37,7 @@ class QueryBuilder {
     filter() {
         const { filterBybrand, filterBycolor, filterBytype, maxPrice, minPrice, filterByBikeType } = this.query;
         const filterConditions = [];
+        console.log(filterBybrand);
         if (filterBybrand) {
             filterConditions.push({ brandName: filterBybrand });
         }

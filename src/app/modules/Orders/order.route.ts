@@ -11,7 +11,7 @@ router.post('/verify-order',orderController.verifyPayment)
 router.get('/get-all-orders',orderController.getAllOrders)
 router.get('/get-today-sale',orderController.getTodaysSale)
 router.get('/get-total-sale',orderController.getTotalSale)
-router.get('/get-my-orders',auth(['customer']),orderController.getMyOrders)
+router.get('/get-my-orders',auth(['customer']),orderController.getMyOrders);
 router.patch('/change-status/:id',orderController.changeStatus)
 router.delete('/delete-order/:id',orderController.deleteOrder)
 

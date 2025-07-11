@@ -44,6 +44,16 @@ const getAllOrders = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
         data: order.data
     });
 }));
+const getMyOrders = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email } = req.user;
+    const order = yield order_service_1.orderServices.getMyOrders(req.query);
+    res.status(http_status_1.default.OK).json({
+        success: true,
+        message: 'My order retrived successfully',
+        statusCode: http_status_1.default.CREATED,
+        data: order
+    });
+}));
 const changeStatus = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const { status } = req.body;
@@ -70,16 +80,6 @@ const getTotalSale = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
     res.status(http_status_1.default.OK).json({
         success: true,
         message: 'Total Sale calculated successfully',
-        statusCode: http_status_1.default.CREATED,
-        data: order
-    });
-}));
-const getMyOrders = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email } = req.user;
-    const order = yield order_service_1.orderServices.getMyOrders(email);
-    res.status(http_status_1.default.OK).json({
-        success: true,
-        message: 'My order retrived successfully',
         statusCode: http_status_1.default.CREATED,
         data: order
     });

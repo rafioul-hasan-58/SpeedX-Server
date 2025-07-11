@@ -33,7 +33,17 @@ const refreshToken = catchAsync(async (req, res) => {
         data: result
     })
 })
+const googleLogin = catchAsync(async (req, res) => {
+    const result = await authService.googleLogin(req.body);
+    res.status(httpStatus.OK).json({
+        success: true,
+        statusCode: 200,
+        message: "Google login successful",
+        data: result
+    })
+})
 export const authController = {
     loginUser,
-    refreshToken
+    refreshToken,
+    googleLogin
 }

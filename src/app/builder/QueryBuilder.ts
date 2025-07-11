@@ -49,7 +49,7 @@ class QueryBuilder<T> {
         } = this.query;
 
         const filterConditions: FilterQuery<T>[] = [];
-
+        console.log(filterBybrand);
         if (filterBybrand) {
             filterConditions.push({ brandName: filterBybrand });
         }
