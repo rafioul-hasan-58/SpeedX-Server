@@ -21,12 +21,21 @@ const userSchema = new Schema<IUser, UserModel>(
             type: String,
             required: [true, 'password is required']
         },
-        role: {
+        roles: {
+            type: [String],
+            enum: ["admin", "customer", "seller"],
+            default: ['customer']
+        },
+        activeRole: {
             type: String,
-            enum: ['admin', 'customer'],
-            default: 'customer'
+            enum: ["admin", "customer", "seller"],
+            default: "customer",
         },
         isBlocked: {
+            type: Boolean,
+            default: false
+        },
+        isVerified: {
             type: Boolean,
             default: false
         }

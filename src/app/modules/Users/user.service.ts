@@ -4,7 +4,7 @@ import { IUser } from "./user.interface";
 import { User } from "./user.model";
 import httpStatus from "http-status";
 const createUserIntoDb = async (payload: IUser) => {
-    const result = await User.create(payload)
+    const result = await User.create(payload);
     return result
 }
 const getProfileFromDb = async (email: string) => {
@@ -45,6 +45,7 @@ const deleteUserFromDb = async (userId: string) => {
     const result = await User.findByIdAndDelete(userId)
     return result
 }
+
 
 export const userServices = {
     createUserIntoDb,

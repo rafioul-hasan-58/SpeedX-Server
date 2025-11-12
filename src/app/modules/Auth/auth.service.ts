@@ -6,11 +6,11 @@ import httpStatus from "http-status";
 import { createToken, verifyToken } from "./auth.utils";
 import { OAuth2Client } from "google-auth-library";
 import crypto from 'crypto';
-
 const client = new OAuth2Client(config.google_client_id);
 
 const googleLogin = async (body: { token: string }) => {
   const { token } = body;
+  console.log(token);
   const tiket = await client.verifyIdToken({
     idToken: token,
     audience: config.google_client_id

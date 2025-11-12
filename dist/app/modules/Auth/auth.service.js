@@ -18,6 +18,41 @@ const AppError_1 = __importDefault(require("../../errors/AppError"));
 const user_model_1 = require("../Users/user.model");
 const http_status_1 = __importDefault(require("http-status"));
 const auth_utils_1 = require("./auth.utils");
+const google_auth_library_1 = require("google-auth-library");
+const crypto_1 = __importDefault(require("crypto"));
+const client = new google_auth_library_1.OAuth2Client(config_1.default.google_client_id);
+const googleLogin = (body) => __awaiter(void 0, void 0, void 0, function* () {
+    const { token } = body;
+    console.log(token);
+    const tiket = yield client.verifyIdToken({
+        idToken: token,
+        audience: config_1.default.google_client_id
+    });
+    const payload = tiket.getPayload();
+    if (!payload) {
+        throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, "Invalid Google token payload");
+    }
+    const { name, email } = payload;
+    let user = yield user_model_1.User.findOne({ email });
+    if (!user) {
+        user = yield user_model_1.User.create({
+            name,
+            email,
+            password: crypto_1.default.randomBytes(6).toString('hex')
+        });
+    }
+    if (user === null || user === void 0 ? void 0 : user.isBlocked) {
+        throw new AppError_1.default(http_status_1.default.FORBIDDEN, 'User is blocked');
+    }
+    const jwtPayload = {
+        email: user.email,
+        role: user.role
+    };
+    const accessToken = (0, auth_utils_1.createToken)(jwtPayload, config_1.default.jwt_access_secret, config_1.default.jwt_access_expires_in);
+    return {
+        accessToken
+    };
+});
 const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield user_model_1.User.isUserExistsByEmail(payload.email);
     // console.log((user._id).toString());
@@ -65,5 +100,6 @@ const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.authService = {
     loginUser,
-    refreshToken
+    refreshToken,
+    googleLogin
 };

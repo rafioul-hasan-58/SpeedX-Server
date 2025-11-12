@@ -35,7 +35,8 @@ class QueryBuilder {
     // }
     // filter method
     filter() {
-        const { filterBybrand, filterBycolor, filterBytype, maxPrice, minPrice, filterByBikeType } = this.query;
+        const { filterBybrand, filterBycolor, filterBytype, maxPrice, minPrice, filterByBikeType, addedBy } = this.query;
+        console.log(addedBy);
         const filterConditions = [];
         console.log(filterBybrand);
         if (filterBybrand) {
@@ -46,6 +47,9 @@ class QueryBuilder {
         }
         if (filterBytype) {
             filterConditions.push({ type: filterBytype });
+        }
+        if (addedBy) {
+            filterConditions.push({ addedBy });
         }
         if (filterByBikeType) {
             filterConditions.push({ bikeType: filterByBikeType });

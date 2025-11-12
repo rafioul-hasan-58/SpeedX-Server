@@ -45,8 +45,10 @@ class QueryBuilder<T> {
             filterBytype,
             maxPrice,
             minPrice,
-            filterByBikeType
+            filterByBikeType,
+            addedBy
         } = this.query;
+        console.log(addedBy);
 
         const filterConditions: FilterQuery<T>[] = [];
         console.log(filterBybrand);
@@ -60,6 +62,9 @@ class QueryBuilder<T> {
 
         if (filterBytype) {
             filterConditions.push({ type: filterBytype });
+        }
+        if (addedBy) {
+            filterConditions.push({ addedBy })
         }
         if (filterByBikeType) {
             filterConditions.push({ bikeType: filterByBikeType });
