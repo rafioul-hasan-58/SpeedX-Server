@@ -23,12 +23,11 @@ const crypto_1 = __importDefault(require("crypto"));
 const client = new google_auth_library_1.OAuth2Client(config_1.default.google_client_id);
 const googleLogin = (body) => __awaiter(void 0, void 0, void 0, function* () {
     const { token } = body;
-    console.log(token);
-    const tiket = yield client.verifyIdToken({
+    const ticket = yield client.verifyIdToken({
         idToken: token,
         audience: config_1.default.google_client_id
     });
-    const payload = tiket.getPayload();
+    const payload = ticket.getPayload();
     if (!payload) {
         throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, "Invalid Google token payload");
     }
@@ -45,8 +44,9 @@ const googleLogin = (body) => __awaiter(void 0, void 0, void 0, function* () {
         throw new AppError_1.default(http_status_1.default.FORBIDDEN, 'User is blocked');
     }
     const jwtPayload = {
+        userId: user.id,
         email: user.email,
-        role: user.role
+        activeRole: user.activeRole
     };
     const accessToken = (0, auth_utils_1.createToken)(jwtPayload, config_1.default.jwt_access_secret, config_1.default.jwt_access_expires_in);
     return {
@@ -54,7 +54,8 @@ const googleLogin = (body) => __awaiter(void 0, void 0, void 0, function* () {
     };
 });
 const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const user = yield user_model_1.User.isUserExistsByEmail(payload.email);
+    const user = yield user_model_1.User.findOne({ email: payload.email });
+    // const user = await User.isUserExistsByEmail(payload.email)
     // console.log((user._id).toString());
     if (!user) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'User not found');
@@ -66,10 +67,12 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         throw new AppError_1.default(http_status_1.default.FORBIDDEN, 'Password not matched');
     }
     const jwtPayload = {
+        userId: user.id,
         email: user.email,
-        role: user.role
+        activeRole: user.activeRole
     };
     const accessToken = (0, auth_utils_1.createToken)(jwtPayload, config_1.default.jwt_access_secret, config_1.default.jwt_access_expires_in);
+    const refreshToken = (0, auth_utils_1.createToken)(jwtPayload, config_1.default.jwt_refresh_secret, config_1.default.jwt_refresh_expires_in);
     return {
         accessToken,
         refreshToken
@@ -80,7 +83,8 @@ const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
     const decoded = (0, auth_utils_1.verifyToken)(token, config_1.default.jwt_refresh_secret);
     const { email } = decoded;
     // checking if the user is exist
-    const user = yield user_model_1.User.isUserExistsByEmail(email);
+    // const user = await User.isUserExistsByEmail(email);
+    const user = yield user_model_1.User.findOne({ email });
     if (!user) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, 'This user is not found !');
     }
@@ -90,8 +94,9 @@ const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
         throw new AppError_1.default(http_status_1.default.FORBIDDEN, 'This user is blocked ! !');
     }
     const jwtPayload = {
+        userId: user.id,
         email: user.email,
-        role: user.role,
+        activeRole: user.activeRole,
     };
     const accessToken = (0, auth_utils_1.createToken)(jwtPayload, config_1.default.jwt_access_secret, config_1.default.jwt_access_expires_in);
     return {

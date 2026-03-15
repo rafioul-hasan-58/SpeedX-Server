@@ -12,32 +12,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const app_1 = __importDefault(require("./app"));
-const mongoose_1 = __importDefault(require("mongoose"));
-const config_1 = __importDefault(require("./app/config"));
-let server;
-function main() {
-    return __awaiter(this, void 0, void 0, function* () {
-        console.log("db", config_1.default.database_url);
-        try {
-            yield mongoose_1.default.connect(config_1.default.database_url);
-            server = app_1.default.listen(config_1.default.port, () => {
-                console.log(`SpeedX server is Running on port ${config_1.default.port}`);
-            });
-        }
-        catch (err) {
-            console.log(err);
-        }
+exports.ChatController = void 0;
+const http_status_1 = __importDefault(require("http-status"));
+const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
+const createChatIntoDB = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email } = req.user;
+    console.log(req.user);
+    // const result = await ChatService.createChatIntoDB(email, req.body)
+    res.status(http_status_1.default.OK).json({
+        success: true,
+        statusCode: 200,
+        message: "Chat sent successful!!",
+        data: ""
     });
-}
-main();
-process.on('unhandledRejection', () => {
-    if (server) {
-        server.close(() => {
-            process.exit(1);
-        });
-    }
-});
-process.on('uncaughtException', () => {
-    process.exit(1);
-});
+}));
+exports.ChatController = {
+    createChatIntoDB
+};

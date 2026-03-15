@@ -69,8 +69,9 @@ const orderSchema = new mongoose_1.Schema({
     email: {
         type: String
     },
-    sellerEmail: {
-        type: String
+    sellerId: {
+        type: mongoose_1.default.Schema.ObjectId,
+        ref: 'User'
     },
     address: {
         type: String,

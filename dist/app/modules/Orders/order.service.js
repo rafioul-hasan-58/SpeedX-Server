@@ -28,7 +28,7 @@ const createOrderIntoDb = (payload, user, client_ip) => __awaiter(void 0, void 0
         const { items } = payload;
         const sellerEmail = yield product_model_1.Product.findById(items[0].product);
         if (sellerEmail === null || sellerEmail === void 0 ? void 0 : sellerEmail.addedBy) {
-            payload.sellerEmail = sellerEmail === null || sellerEmail === void 0 ? void 0 : sellerEmail.addedBy;
+            payload.sellerId = sellerEmail === null || sellerEmail === void 0 ? void 0 : sellerEmail.addedBy;
         }
         // validate all products
         const productIds = items.map((item) => item.product);

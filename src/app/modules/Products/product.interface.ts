@@ -1,3 +1,5 @@
+import { Types } from "mongoose";
+import { BikeType, ProductType } from "./product.model";
 
 export interface IProduct {
     name: string;
@@ -5,11 +7,11 @@ export interface IProduct {
     brandName: string;
     price: number;
     description: string;
-    bikeType: 'scooter' | 'bike';
-    type: 'new' | 'used';
+    bikeType: BikeType;
+    type: ProductType;
     model: string;
     stocks: number;
     images: string[];
-    instock?: boolean;
-    addedBy: string;
+    inStock?: boolean;
+    addedBy: Types.ObjectId;
 }

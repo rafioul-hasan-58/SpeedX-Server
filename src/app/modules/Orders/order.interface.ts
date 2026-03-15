@@ -16,6 +16,6 @@ export interface IOrder {
     address: string;
     email: string;
     contact: number;
-    sellerEmail: string;
+    sellerId: Types.ObjectId;
     orderNote?: string;
 }

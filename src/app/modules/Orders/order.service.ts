@@ -13,7 +13,7 @@ const createOrderIntoDb = async (payload: IOrder, user: any, client_ip: string) 
         const { items } = payload;
         const sellerEmail = await Product.findById(items[0].product);
         if (sellerEmail?.addedBy) {
-            payload.sellerEmail = sellerEmail?.addedBy;
+            payload.sellerId = sellerEmail?.addedBy;
         }
         // validate all products
         const productIds = items.map((item) => item.product);

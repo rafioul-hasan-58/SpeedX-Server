@@ -5,7 +5,11 @@ import { userValidations } from "./user.validation";
 
 const router = Router()
 
-router.post('/register', validateRequest(userValidations.userValidationSchema), userController.createUserIntoDb)
+router.post(
+    '/register',
+    validateRequest(userValidations.userValidationSchema),
+    userController.register
+);
 router.get('/get-all-users', userController.getAllUsers)
 router.patch('/update/:id', validateRequest(userValidations.updateUserValidationSchema), userController.updateUserIntoDb)
 router.delete('/delete/:id', userController.deleteUserFromDb)

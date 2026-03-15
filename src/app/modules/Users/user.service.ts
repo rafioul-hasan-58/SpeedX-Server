@@ -3,7 +3,7 @@ import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
 import { IUser } from "./user.interface";
 import { User } from "./user.model";
 import httpStatus from "http-status";
-const createUserIntoDb = async (payload: IUser) => {
+const register = async (payload: IUser) => {
     const result = await User.create(payload);
     return result
 }
@@ -48,7 +48,7 @@ const deleteUserFromDb = async (userId: string) => {
 
 
 export const userServices = {
-    createUserIntoDb,
+    register,
     updateUserIntoDb,
     deleteUserFromDb,
     getProfileFromDb,

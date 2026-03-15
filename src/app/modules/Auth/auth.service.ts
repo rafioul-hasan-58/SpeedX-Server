@@ -10,12 +10,11 @@ const client = new OAuth2Client(config.google_client_id);
 
 const googleLogin = async (body: { token: string }) => {
   const { token } = body;
-  console.log(token);
-  const tiket = await client.verifyIdToken({
+  const ticket = await client.verifyIdToken({
     idToken: token,
     audience: config.google_client_id
   });
-  const payload = tiket.getPayload();
+  const payload = ticket.getPayload();
   if (!payload) {
     throw new AppError(httpStatus.UNAUTHORIZED, "Invalid Google token payload");
   }
@@ -32,8 +31,9 @@ const googleLogin = async (body: { token: string }) => {
     throw new AppError(httpStatus.FORBIDDEN, 'User is blocked')
   }
   const jwtPayload = {
+    userId: user.id,
     email: user.email,
-    role: user.role
+    activeRole: user.activeRole
   }
   const accessToken = createToken(
     jwtPayload,
@@ -46,7 +46,8 @@ const googleLogin = async (body: { token: string }) => {
   }
 }
 const loginUser = async (payload: IUserLogin) => {
-  const user = await User.isUserExistsByEmail(payload.email)
+  const user = await User.findOne({ email: payload.email });
+  // const user = await User.isUserExistsByEmail(payload.email)
 
   // console.log((user._id).toString());
   if (!user) {
@@ -61,16 +62,20 @@ const loginUser = async (payload: IUserLogin) => {
   }
 
   const jwtPayload = {
+    userId: user.id,
     email: user.email,
-    role: user.role
+    activeRole: user.activeRole
   }
   const accessToken = createToken(
     jwtPayload,
     config.jwt_access_secret as string,
     config.jwt_access_expires_in as `${number}s` | `${number}m` | `${number}h` | `${number}d`
   );
-
-
+  const refreshToken = createToken(
+    jwtPayload,
+    config.jwt_refresh_secret as string,
+    config.jwt_refresh_expires_in as `${number}s` | `${number}m` | `${number}h` | `${number}d`
+  );
 
   return {
     accessToken,
@@ -87,7 +92,8 @@ const refreshToken = async (token: string) => {
   const { email } = decoded;
 
   // checking if the user is exist
-  const user = await User.isUserExistsByEmail(email);
+  // const user = await User.isUserExistsByEmail(email);
+  const user = await User.findOne({ email });
 
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, 'This user is not found !');
@@ -102,8 +108,9 @@ const refreshToken = async (token: string) => {
 
 
   const jwtPayload = {
+    userId: user.id,
     email: user.email,
-    role: user.role,
+    activeRole: user.activeRole,
   };
 
   const accessToken = createToken(

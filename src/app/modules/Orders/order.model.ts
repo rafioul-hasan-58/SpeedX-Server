@@ -18,7 +18,7 @@ const orderSchema = new Schema<IOrder>({
     ],
     status: {
         type: String,
-        enum: ['Pending', 'Cancelled', 'Delivered','Processing','Shipped','Returned'],
+        enum: ['Pending', 'Cancelled', 'Delivered', 'Processing', 'Shipped', 'Returned'],
         default: 'Pending'
     },
     contact: {
@@ -35,8 +35,10 @@ const orderSchema = new Schema<IOrder>({
     email: {
         type: String
     },
-    sellerEmail:{
-        type:String
+    sellerId: {
+        type: mongoose.Schema.ObjectId,
+        ref: 'User'
+
     },
     address: {
         type: String,

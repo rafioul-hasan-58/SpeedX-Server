@@ -9,7 +9,7 @@ const user_controller_1 = require("./user.controller");
 const validateRequest_1 = __importDefault(require("../../middlewares/validateRequest"));
 const user_validation_1 = require("./user.validation");
 const router = (0, express_1.Router)();
-router.post('/register', (0, validateRequest_1.default)(user_validation_1.userValidations.userValidationSchema), user_controller_1.userController.createUserIntoDb);
+router.post('/register', (0, validateRequest_1.default)(user_validation_1.userValidations.userValidationSchema), user_controller_1.userController.register);
 router.get('/get-all-users', user_controller_1.userController.getAllUsers);
 router.patch('/update/:id', (0, validateRequest_1.default)(user_validation_1.userValidations.updateUserValidationSchema), user_controller_1.userController.updateUserIntoDb);
 router.delete('/delete/:id', user_controller_1.userController.deleteUserFromDb);

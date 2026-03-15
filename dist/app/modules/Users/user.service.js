@@ -17,7 +17,7 @@ const AppError_1 = __importDefault(require("../../errors/AppError"));
 const sendImageToCloudinary_1 = require("../../utils/sendImageToCloudinary");
 const user_model_1 = require("./user.model");
 const http_status_1 = __importDefault(require("http-status"));
-const createUserIntoDb = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+const register = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield user_model_1.User.create(payload);
     return result;
 });
@@ -59,7 +59,7 @@ const deleteUserFromDb = (userId) => __awaiter(void 0, void 0, void 0, function*
     return result;
 });
 exports.userServices = {
-    createUserIntoDb,
+    register,
     updateUserIntoDb,
     deleteUserFromDb,
     getProfileFromDb,

@@ -19,7 +19,7 @@ app.use(cors({ origin: ['http://localhost:5173', 'https://speed-x-jade.vercel.ap
 app.use('/api/', router)
 // testing
 const test = async (req: Request, res: Response) => {
-  res.send('Server Running!!!')
+  res.send('SpeedX server is running!')
 }
 app.get('/', test)
 

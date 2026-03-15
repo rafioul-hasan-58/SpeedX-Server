@@ -16,11 +16,11 @@ exports.userController = void 0;
 const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const http_status_1 = __importDefault(require("http-status"));
 const user_service_1 = require("./user.service");
-const createUserIntoDb = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield user_service_1.userServices.createUserIntoDb(req.body);
+const register = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_service_1.userServices.register(req.body);
     res.status(http_status_1.default.OK).json({
         success: true,
-        message: 'User registerd successfully',
+        message: 'User registered successfully',
         statusCode: 201,
         data: result
     });
@@ -30,7 +30,7 @@ const getMyProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
     const result = yield user_service_1.userServices.getProfileFromDb(email);
     res.status(http_status_1.default.OK).json({
         success: true,
-        message: 'Profile retrived successfully',
+        message: 'Profile retrieved successfully',
         statusCode: 200,
         data: result
     });
@@ -39,7 +39,7 @@ const getAllUsers = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, vo
     const result = yield user_service_1.userServices.getAllUsersFromDb();
     res.status(http_status_1.default.OK).json({
         success: true,
-        message: 'All users retrived successfully',
+        message: 'All users retrieved successfully',
         statusCode: 200,
         data: result
     });
@@ -66,7 +66,7 @@ const deleteUserFromDb = (0, catchAsync_1.default)((req, res) => __awaiter(void 
     });
 }));
 exports.userController = {
-    createUserIntoDb,
+    register,
     updateUserIntoDb,
     deleteUserFromDb,
     getMyProfile,

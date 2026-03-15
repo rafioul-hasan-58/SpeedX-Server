@@ -31,7 +31,7 @@ app.use((0, cors_1.default)({ origin: ['http://localhost:5173', 'https://speed-x
 app.use('/api/', routes_1.default);
 // testing
 const test = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    res.send('Server Running!!!');
+    res.send('SpeedX server is running!');
 });
 app.get('/', test);
 app.use(globalErrorHandler_1.default);
