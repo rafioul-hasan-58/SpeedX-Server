@@ -6,6 +6,8 @@ import httpStatus from "http-status";
 import { createToken, verifyToken } from "./auth.utils";
 import { OAuth2Client } from "google-auth-library";
 import crypto from 'crypto';
+import bcrypt from 'bcrypt';
+
 const client = new OAuth2Client(config.google_client_id);
 
 const googleLogin = async (body: { token: string }) => {
@@ -123,8 +125,31 @@ const refreshToken = async (token: string) => {
     accessToken,
   };
 };
+
+const changePassword = async (userId: string, password: { newPassword: string, oldPassword: string }) => {
+  const { newPassword, oldPassword } = password;
+
+  const user = await User.findById({ _id: userId });
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found!");
+  };
+  if (!(await User.isPasswordMatched(oldPassword, user?.password))) {
+    throw new AppError(httpStatus.FORBIDDEN, 'Password not matched')
+  }
+
+  const hashedPassword = await bcrypt.hash(
+    newPassword,
+    Number(config.bcrypt_salt_rounds),
+  );
+  await User.findByIdAndUpdate(userId, { password: hashedPassword }, { new: true });
+  return {
+    message: "Password Changed!"
+  }
+
+}
 export const authService = {
   loginUser,
   refreshToken,
-  googleLogin
+  googleLogin,
+  changePassword
 }

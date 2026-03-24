@@ -17,11 +17,11 @@ const mongoose_1 = require("mongoose");
 const bcrypt_1 = __importDefault(require("bcrypt"));
 const config_1 = __importDefault(require("../../config"));
 const userSchema = new mongoose_1.Schema({
-    name: {
+    fullName: {
         type: String,
         required: [true, 'name is required']
     },
-    image: {
+    profileImage: {
         type: String,
         default: 'https://i.ibb.co.com/7NZkW9fV/Head.jpg'
     },
@@ -38,6 +38,12 @@ const userSchema = new mongoose_1.Schema({
         type: [String],
         enum: ["admin", "customer", "seller"],
         default: ['customer']
+    },
+    location: {
+        type: String,
+    },
+    bio: {
+        type: String,
     },
     activeRole: {
         type: String,

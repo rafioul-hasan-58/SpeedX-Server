@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import catchAsync from "../../utils/catchAsync";
 import httpStatus from "http-status";
 import { userServices } from "./user.service";
+import { getImageUrl } from "../../utils/s3/uploadFile";
 const register = catchAsync(async (req: Request, res: Response) => {
     const result = await userServices.register(req.body)
     res.status(httpStatus.OK).json({
@@ -11,9 +12,9 @@ const register = catchAsync(async (req: Request, res: Response) => {
         data: result
     })
 })
-const getMyProfile = catchAsync(async (req: Request, res: Response) => {
-    const { email } = req.params
-    const result = await userServices.getProfileFromDb(email)
+const myProfile = catchAsync(async (req: Request, res: Response) => {
+    const { userId } = req.user;
+    const result = await userServices.myProfile(userId)
     res.status(httpStatus.OK).json({
         success: true,
         message: 'Profile retrieved successfully',
@@ -30,17 +31,20 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
         data: result
     })
 })
-const updateUserIntoDb = catchAsync(async (req: Request, res: Response) => {
-    const { id } = req.params;
-    // console.log(req.file,'file');
-    const result = await userServices.updateUserIntoDb(req.body, id, req.file)
+const updateProfile = catchAsync(async (req: Request, res: Response) => {
+    const { userId } = req.user;
+    if (req.file) {
+        const profileImage = await getImageUrl(req.file as any);
+        req.body.profileImage = profileImage
+    }
+    const result = await userServices.updateProfile(req.body, userId)
     res.status(httpStatus.OK).json({
         success: true,
-        message: 'User updated successfully',
+        message: 'Profile updated successfully',
         statusCode: httpStatus.OK,
         data: result
     })
-})
+});
 const deleteUserFromDb = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
     await userServices.deleteUserFromDb(id)
@@ -51,11 +55,22 @@ const deleteUserFromDb = catchAsync(async (req: Request, res: Response) => {
         data: 'empty'
     })
 })
+const addSellerRole = catchAsync(async (req: Request, res: Response) => {
+    const { userId } = req.user;
+    const result = await userServices.addSellerRole(userId)
+    res.status(httpStatus.OK).json({
+        success: true,
+        statusCode: httpStatus.OK,
+        message: 'User role added successfully',
+        data: result
+    })
+})
 
 export const userController = {
     register,
-    updateUserIntoDb,
+    updateProfile,
     deleteUserFromDb,
-    getMyProfile,
-    getAllUsers
+    myProfile,
+    getAllUsers,
+    addSellerRole
 }

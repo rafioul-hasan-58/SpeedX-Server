@@ -1,5 +1,4 @@
 import AppError from "../../errors/AppError";
-import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
 import { IUser } from "./user.interface";
 import { User } from "./user.model";
 import httpStatus from "http-status";
@@ -7,15 +6,18 @@ const register = async (payload: IUser) => {
     const result = await User.create(payload);
     return result
 }
-const getProfileFromDb = async (email: string) => {
-    const result = await User.findOne({ email })
+const myProfile = async (userId: string) => {
+    const result = await User.findById({ _id: userId });
+    if (!result) {
+        throw new AppError(httpStatus.NOT_FOUND, "Profile not found!")
+    }
     return result
 }
 const getAllUsersFromDb = async () => {
     const result = await User.find()
     return result
 }
-const updateUserIntoDb = async (payload: Partial<IUser>, userId: string, file: any) => {
+const updateProfile = async (payload: Partial<IUser>, userId: string) => {
     const isUserExists = await User.findById(userId)
     if (!isUserExists) {
         throw new AppError(httpStatus.NOT_FOUND, 'The user could not found')
@@ -23,14 +25,12 @@ const updateUserIntoDb = async (payload: Partial<IUser>, userId: string, file: a
     if (isUserExists.isBlocked) {
         throw new AppError(httpStatus.BAD_REQUEST, 'The user is Blocked')
     }
-    if (file) {
-        const imageName = `${payload?.email}${payload?.name}`;
-        const path = file?.path;
-        const { secure_url } = await sendImageToCloudinary(imageName, path);
-        // console.log(secure_url,'image');
-        payload.image = secure_url as string
+    const updatedPayload = {
+        ...payload,
+        profileImage: payload.profileImage
     }
-    const result = await User.findByIdAndUpdate(userId, payload)
+
+    const result = await User.findByIdAndUpdate(userId, updatedPayload, { new: true })
     return result
 }
 const deleteUserFromDb = async (userId: string) => {
@@ -46,11 +46,34 @@ const deleteUserFromDb = async (userId: string) => {
     return result
 }
 
+const addSellerRole = async (userId: string) => {
+    const user = await User.findById({ _id: userId });
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, "User not found!")
+    }
+    if (user?.roles.includes("seller")) {
+        throw new AppError(httpStatus.CONFLICT, "You already have seller role!")
+    }
+    const result = await User.updateOne({ _id: userId }, { $addToSet: { roles: "seller" } })
+    return result
+};
+
+const switchRole = async (userId: string) => {
+    const user = await User.findById({ _id: userId });
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, "User not found!")
+    }
+}
+
+
+
 
 export const userServices = {
     register,
-    updateUserIntoDb,
+    updateProfile,
     deleteUserFromDb,
-    getProfileFromDb,
-    getAllUsersFromDb
+    myProfile,
+    getAllUsersFromDb,
+    addSellerRole,
+    switchRole
 }

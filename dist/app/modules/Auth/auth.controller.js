@@ -54,8 +54,19 @@ const googleLogin = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, vo
         data: result
     });
 }));
+const changePassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId } = req.user;
+    const result = yield auth_service_1.authService.changePassword(userId, req.body);
+    res.status(http_status_1.default.OK).json({
+        success: true,
+        statusCode: 200,
+        message: "Password Changed!",
+        data: result
+    });
+}));
 exports.authController = {
     loginUser,
     refreshToken,
-    googleLogin
+    googleLogin,
+    changePassword
 };

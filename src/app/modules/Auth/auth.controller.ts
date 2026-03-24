@@ -42,8 +42,19 @@ const googleLogin = catchAsync(async (req, res) => {
         data: result
     })
 })
+const changePassword = catchAsync(async (req, res) => {
+    const { userId } = req.user;
+    const result = await authService.changePassword(userId, req.body);
+    res.status(httpStatus.OK).json({
+        success: true,
+        statusCode: 200,
+        message: "Password Changed!",
+        data: result
+    })
+})
 export const authController = {
     loginUser,
     refreshToken,
-    googleLogin
+    googleLogin,
+    changePassword
 }

@@ -64,7 +64,7 @@ const createOrderIntoDb = (payload, user, client_ip) => __awaiter(void 0, void 0
             amount: totalPrice,
             order_id: order._id,
             currency: "BDT",
-            customer_name: currentUser === null || currentUser === void 0 ? void 0 : currentUser.name,
+            customer_name: currentUser === null || currentUser === void 0 ? void 0 : currentUser.fullName,
             customer_address: payload.address,
             customer_email: currentUser === null || currentUser === void 0 ? void 0 : currentUser.email,
             customer_phone: String(payload.contact),

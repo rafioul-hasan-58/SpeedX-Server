@@ -26,5 +26,17 @@ exports.default = {
         sp_password: process.env.SP_PASSWORD,
         sp_prefix: process.env.SP_PREFIX,
         sp_return_url: process.env.SP_RETURN_URL,
+    },
+    s3: {
+        accessKeyId: process.env.S3_ACCESS_KEY || "DO002RGDJ947DJHJ9WDT",
+        secretAccessKey: process.env.S3_SECRET_KEY ||
+            "e5+/pko6Ojar51Hb8ojUKfq2HtXy+tnGKOfs3rIcEfo",
+        region: process.env.S3_REGION || "nyc3",
+        bucketName: process.env.S3_BUCKET_NAME || "smtech-space",
+        endpoint: process.env.S3_ENDPOINT,
+    },
+    ai_api: {
+        gemini_api_key: process.env.GEMINI_API_KEY,
+        groq_api_key: process.env.GROQ_API_KEY,
     }
 };

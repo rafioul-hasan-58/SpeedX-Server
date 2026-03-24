@@ -20,6 +20,7 @@ const http_status_1 = __importDefault(require("http-status"));
 const auth_utils_1 = require("./auth.utils");
 const google_auth_library_1 = require("google-auth-library");
 const crypto_1 = __importDefault(require("crypto"));
+const bcrypt_1 = __importDefault(require("bcrypt"));
 const client = new google_auth_library_1.OAuth2Client(config_1.default.google_client_id);
 const googleLogin = (body) => __awaiter(void 0, void 0, void 0, function* () {
     const { token } = body;
@@ -103,8 +104,25 @@ const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
         accessToken,
     };
 });
+const changePassword = (userId, password) => __awaiter(void 0, void 0, void 0, function* () {
+    const { newPassword, oldPassword } = password;
+    const user = yield user_model_1.User.findById({ _id: userId });
+    if (!user) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "User not found!");
+    }
+    ;
+    if (!(yield user_model_1.User.isPasswordMatched(oldPassword, user === null || user === void 0 ? void 0 : user.password))) {
+        throw new AppError_1.default(http_status_1.default.FORBIDDEN, 'Password not matched');
+    }
+    const hashedPassword = yield bcrypt_1.default.hash(newPassword, Number(config_1.default.bcrypt_salt_rounds));
+    yield user_model_1.User.findByIdAndUpdate(userId, { password: hashedPassword }, { new: true });
+    return {
+        message: "Password Changed!"
+    };
+});
 exports.authService = {
     loginUser,
     refreshToken,
-    googleLogin
+    googleLogin,
+    changePassword
 };

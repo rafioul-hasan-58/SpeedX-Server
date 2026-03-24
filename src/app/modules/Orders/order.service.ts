@@ -63,7 +63,7 @@ const createOrderIntoDb = async (payload: IOrder, user: any, client_ip: string) 
             amount: totalPrice,
             order_id: order._id,
             currency: "BDT",
-            customer_name: currentUser?.name,
+            customer_name: currentUser?.fullName,
             customer_address: payload.address,
             customer_email: currentUser?.email,
             customer_phone: String(payload.contact),

@@ -4,11 +4,11 @@ import bcrypt from 'bcrypt';
 import config from "../../config";
 const userSchema = new Schema<IUser, UserModel>(
     {
-        name: {
+        fullName: {
             type: String,
             required: [true, 'name is required']
         },
-        image: {
+        profileImage: {
             type: String,
             default: 'https://i.ibb.co.com/7NZkW9fV/Head.jpg'
         },
@@ -25,6 +25,12 @@ const userSchema = new Schema<IUser, UserModel>(
             type: [String],
             enum: ["admin", "customer", "seller"],
             default: ['customer']
+        },
+        location: {
+            type: String,
+        },
+        bio: {
+            type: String,
         },
         activeRole: {
             type: String,

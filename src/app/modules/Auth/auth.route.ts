@@ -1,6 +1,9 @@
 
 import { Router } from "express";
 import { authController } from "./auth.controller";
+import auth from "../../middlewares/auth";
+import validateRequest from "../../middlewares/validateRequest";
+import { authValidation } from "./auth.validation";
 
 
 const router = Router()
@@ -10,5 +13,10 @@ router.post(
 );
 router.post("/login", authController.loginUser);
 router.post('/refresh-token', authController.refreshToken);
-
+router.patch(
+    "/change-password",
+    auth(["customer", "admin", "seller"]),
+    validateRequest(authValidation.changePasswordSchema),
+    authController.changePassword
+);
 export const authRoutes = router

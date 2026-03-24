@@ -16,6 +16,7 @@ exports.userController = void 0;
 const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const http_status_1 = __importDefault(require("http-status"));
 const user_service_1 = require("./user.service");
+const uploadFile_1 = require("../../utils/s3/uploadFile");
 const register = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield user_service_1.userServices.register(req.body);
     res.status(http_status_1.default.OK).json({
@@ -25,9 +26,9 @@ const register = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 
         data: result
     });
 }));
-const getMyProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email } = req.params;
-    const result = yield user_service_1.userServices.getProfileFromDb(email);
+const myProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId } = req.user;
+    const result = yield user_service_1.userServices.myProfile(userId);
     res.status(http_status_1.default.OK).json({
         success: true,
         message: 'Profile retrieved successfully',
@@ -44,13 +45,16 @@ const getAllUsers = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, vo
         data: result
     });
 }));
-const updateUserIntoDb = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { id } = req.params;
-    // console.log(req.file,'file');
-    const result = yield user_service_1.userServices.updateUserIntoDb(req.body, id, req.file);
+const updateProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId } = req.user;
+    if (req.file) {
+        const profileImage = yield (0, uploadFile_1.getImageUrl)(req.file);
+        req.body.profileImage = profileImage;
+    }
+    const result = yield user_service_1.userServices.updateProfile(req.body, userId);
     res.status(http_status_1.default.OK).json({
         success: true,
-        message: 'User updated successfully',
+        message: 'Profile updated successfully',
         statusCode: http_status_1.default.OK,
         data: result
     });
@@ -65,10 +69,21 @@ const deleteUserFromDb = (0, catchAsync_1.default)((req, res) => __awaiter(void 
         data: 'empty'
     });
 }));
+const addSellerRole = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId } = req.user;
+    const result = yield user_service_1.userServices.addSellerRole(userId);
+    res.status(http_status_1.default.OK).json({
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: 'User role added successfully',
+        data: result
+    });
+}));
 exports.userController = {
     register,
-    updateUserIntoDb,
+    updateProfile,
     deleteUserFromDb,
-    getMyProfile,
-    getAllUsers
+    myProfile,
+    getAllUsers,
+    addSellerRole
 };

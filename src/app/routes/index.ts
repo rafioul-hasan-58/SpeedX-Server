@@ -5,6 +5,7 @@ import { orderRoutes } from "../modules/Orders/order.route";
 import { authRoutes } from "../modules/Auth/auth.route";
 import { chatRoomRoute } from "../modules/ChatRoom/chatRoom.route";
 import { ChatRoute } from "../modules/Chat/chat.route";
+import { chatbotRoutes } from "../modules/Chatbot/chatbot.routes";
 
 const router = Router();
 
@@ -32,7 +33,11 @@ const moduleRoutes = [
     {
         path: '/chats',
         route: ChatRoute
-    }
+    },
+    {
+        path: '/chatbot',
+        route: chatbotRoutes
+    },
 ];
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

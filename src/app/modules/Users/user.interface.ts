@@ -2,13 +2,15 @@ import { Model } from "mongoose";
 
 
 export interface IUser {
-    image?: string
-    name: string;
+    fullName: string;
     email: string;
     password: string;
+    profileImage?: string
     roles: string[]
     activeRole: 'admin' | 'customer' | "seller",
     isBlocked: boolean;
+    location?: string;
+    bio?: string;
     isVerified: boolean;
 }
 
