@@ -13,28 +13,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.chatRoomController = void 0;
-const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const http_status_1 = __importDefault(require("http-status"));
+const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const chatRoom_service_1 = require("./chatRoom.service");
+const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const createOrGetChatRoom = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield chatRoom_service_1.chatRoomService.createOrGetChatRoom(req.body.createdBy, req.body.participantId);
-    res.status(http_status_1.default.OK).json({
+    (0, sendResponse_1.default)(res, {
         success: true,
-        statusCode: 200,
-        message: "ChatRoom created successful!!",
-        data: result
+        statusCode: http_status_1.default.OK,
+        message: "Chat room created successfully",
+        data: result,
     });
 }));
 const joinChatRoom = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield chatRoom_service_1.chatRoomService.joinChatRoom(req.body.roomId, req.body.userId);
-    res.status(http_status_1.default.OK).json({
+    (0, sendResponse_1.default)(res, {
         success: true,
-        statusCode: 200,
-        message: "ChatRoom joined successfully!!",
-        data: result
+        statusCode: http_status_1.default.OK,
+        message: "Joined chat room successfully",
+        data: result,
     });
 }));
 exports.chatRoomController = {
     createOrGetChatRoom,
-    joinChatRoom
+    joinChatRoom,
 };

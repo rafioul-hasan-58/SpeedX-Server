@@ -16,82 +16,82 @@ exports.orderController = void 0;
 const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const http_status_1 = __importDefault(require("http-status"));
 const order_service_1 = require("./order.service");
+const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const createOrderIntoDb = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield order_service_1.orderServices.createOrderIntoDb(req.body, req.user, req.ip);
-    res.status(http_status_1.default.OK).json({
+    (0, sendResponse_1.default)(res, {
         success: true,
-        message: 'Order Pressed successfully',
-        statusCode: 201,
-        data: result
+        statusCode: http_status_1.default.CREATED,
+        message: "Order placed successfully",
+        data: result,
     });
 }));
 const verifyPayment = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const order = yield order_service_1.orderServices.verifyPayment(req.query.order_id);
-    res.status(http_status_1.default.OK).json({
+    (0, sendResponse_1.default)(res, {
         success: true,
-        message: 'Order verified successfully',
-        statusCode: http_status_1.default.CREATED,
-        data: order
+        statusCode: http_status_1.default.OK,
+        message: "Payment verified successfully",
+        data: order,
     });
 }));
 const getAllOrders = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const order = yield order_service_1.orderServices.getAllOrders(req.query);
-    res.status(http_status_1.default.OK).json({
+    (0, sendResponse_1.default)(res, {
         success: true,
-        message: 'Order retrived successfully',
-        statusCode: http_status_1.default.CREATED,
+        statusCode: http_status_1.default.OK,
+        message: "Orders retrieved successfully",
         meta: order.meta,
-        data: order.data
+        data: order.data,
     });
 }));
 const getMyOrders = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email } = req.user;
     const order = yield order_service_1.orderServices.getMyOrders(req.query);
-    res.status(http_status_1.default.OK).json({
+    (0, sendResponse_1.default)(res, {
         success: true,
-        message: 'My order retrived successfully',
-        statusCode: http_status_1.default.CREATED,
-        data: order
+        statusCode: http_status_1.default.OK,
+        message: "My orders retrieved successfully",
+        data: order,
     });
 }));
 const changeStatus = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const { status } = req.body;
-    // console.log(status);
     const order = yield order_service_1.orderServices.changeStatus(status, id);
-    res.status(http_status_1.default.OK).json({
+    (0, sendResponse_1.default)(res, {
         success: true,
-        message: 'Status updated successfully',
-        statusCode: http_status_1.default.CREATED,
-        data: order
+        statusCode: http_status_1.default.OK,
+        message: "Order status updated successfully",
+        data: order,
     });
 }));
 const getTodaysSale = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const order = yield order_service_1.orderServices.getTodaysSale();
-    res.status(http_status_1.default.OK).json({
+    (0, sendResponse_1.default)(res, {
         success: true,
-        message: 'Todays Sale calculated successfully',
-        statusCode: http_status_1.default.CREATED,
-        data: order
+        statusCode: http_status_1.default.OK,
+        message: "Today's sales calculated successfully",
+        data: order,
     });
 }));
 const getTotalSale = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const order = yield order_service_1.orderServices.getTotalSale();
-    res.status(http_status_1.default.OK).json({
+    (0, sendResponse_1.default)(res, {
         success: true,
-        message: 'Total Sale calculated successfully',
-        statusCode: http_status_1.default.CREATED,
-        data: order
+        statusCode: http_status_1.default.OK,
+        message: "Total sales calculated successfully",
+        data: order,
     });
 }));
 const deleteOrder = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const order = yield order_service_1.orderServices.deleteOrder(id);
-    res.status(http_status_1.default.OK).json({
+    (0, sendResponse_1.default)(res, {
         success: true,
-        message: 'Order deleted successfully',
-        statusCode: http_status_1.default.CREATED,
-        data: order
+        statusCode: http_status_1.default.OK,
+        message: "Order deleted successfully",
+        data: order,
     });
 }));
 exports.orderController = {
@@ -102,5 +102,5 @@ exports.orderController = {
     getMyOrders,
     changeStatus,
     deleteOrder,
-    getTotalSale
+    getTotalSale,
 };

@@ -16,83 +16,84 @@ exports.productController = void 0;
 const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const http_status_1 = __importDefault(require("http-status"));
 const product_service_1 = require("./product.service");
+const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const createProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield product_service_1.productServices.createProduct(req.body);
-    res.status(http_status_1.default.OK).json({
+    (0, sendResponse_1.default)(res, {
         success: true,
-        message: 'Product added successfully',
-        statusCode: 201,
-        data: result
+        statusCode: http_status_1.default.CREATED,
+        message: "Product added successfully",
+        data: result,
     });
 }));
 const updateProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
-    // console.log(req.file, 'file');
     const result = yield product_service_1.productServices.updateProduct(req.body, id);
-    res.status(http_status_1.default.OK).json({
+    (0, sendResponse_1.default)(res, {
         success: true,
-        message: 'Product updated successfully',
-        statusCode: 201,
-        data: result
+        statusCode: http_status_1.default.OK,
+        message: "Product updated successfully",
+        data: result,
     });
 }));
 const removeImage = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const result = yield product_service_1.productServices.removeImage(id, req.body.image);
-    res.status(http_status_1.default.OK).json({
+    (0, sendResponse_1.default)(res, {
         success: true,
-        message: 'Image removed successfully',
-        statusCode: 201,
-        data: result
+        statusCode: http_status_1.default.OK,
+        message: "Image removed successfully",
+        data: result,
     });
 }));
 const getAllProducts = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield product_service_1.productServices.getAllProducts(req.query);
-    res.status(http_status_1.default.OK).json({
+    (0, sendResponse_1.default)(res, {
         success: true,
-        message: 'Product retrived successfully',
+        statusCode: http_status_1.default.OK,
+        message: "Products retrieved successfully",
         meta: result.meta,
-        data: result.data
+        data: result.data,
     });
 }));
 const getMyProducts = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email } = req.body;
     const result = yield product_service_1.productServices.getMyProducts(req.query, email);
-    res.status(http_status_1.default.OK).json({
+    (0, sendResponse_1.default)(res, {
         success: true,
-        message: 'My added products retrived successfully',
-        statusCode: 201,
+        statusCode: http_status_1.default.OK,
+        message: "My products retrieved successfully",
         meta: result.meta,
-        data: result.data
+        data: result.data,
     });
 }));
 const getSingleProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const result = yield product_service_1.productServices.getSingleProduct(id);
-    res.status(http_status_1.default.OK).json({
+    (0, sendResponse_1.default)(res, {
         success: true,
-        message: 'Single product retrived successfully',
-        statusCode: 201,
-        data: result
+        statusCode: http_status_1.default.OK,
+        message: "Product retrieved successfully",
+        data: result,
     });
 }));
 const deleteProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { id } = req.params;
     const result = yield product_service_1.productServices.deleteProduct(id);
-    res.status(http_status_1.default.OK).json({
+    (0, sendResponse_1.default)(res, {
         success: true,
-        message: 'Product deleted successfully',
-        statusCode: 201,
-        data: result
+        statusCode: http_status_1.default.OK,
+        message: "Product deleted successfully",
+        data: result,
     });
 }));
 const getAvailableStocks = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield product_service_1.productServices.getAvailableStocks();
-    res.status(http_status_1.default.OK).json({
+    (0, sendResponse_1.default)(res, {
         success: true,
-        message: 'Stocks retrived successfully',
-        statusCode: 201,
-        data: result
+        statusCode: http_status_1.default.OK,
+        message: "Available stocks retrieved successfully",
+        data: result,
     });
 }));
 exports.productController = {
@@ -103,5 +104,5 @@ exports.productController = {
     deleteProduct,
     getAvailableStocks,
     removeImage,
-    getMyProducts
+    getMyProducts,
 };

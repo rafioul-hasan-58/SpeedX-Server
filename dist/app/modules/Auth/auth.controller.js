@@ -17,56 +17,55 @@ const http_status_1 = __importDefault(require("http-status"));
 const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const auth_service_1 = require("./auth.service");
 const config_1 = __importDefault(require("../../config"));
+const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const loginUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield auth_service_1.authService.loginUser(req.body);
     const { refreshToken, accessToken } = user;
-    res.cookie('refreshToken', refreshToken, {
-        secure: config_1.default.NODE_ENV === 'production',
+    res.cookie("refreshToken", refreshToken, {
+        secure: config_1.default.NODE_ENV === "production",
         httpOnly: true,
         sameSite: true,
         maxAge: 1000 * 60 * 60 * 24 * 365,
     });
-    res.status(http_status_1.default.OK).json({
+    (0, sendResponse_1.default)(res, {
         success: true,
-        statusCode: 200,
+        statusCode: http_status_1.default.OK,
         message: "Login successful",
-        data: {
-            accessToken
-        }
+        data: { accessToken },
     });
 }));
 const refreshToken = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { refreshToken } = req.cookies;
     const result = yield auth_service_1.authService.refreshToken(refreshToken);
-    res.status(http_status_1.default.OK).json({
+    (0, sendResponse_1.default)(res, {
         success: true,
-        statusCode: 200,
-        message: "Login successful",
-        data: result
+        statusCode: http_status_1.default.OK,
+        message: "Token refreshed successfully",
+        data: result,
     });
 }));
 const googleLogin = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield auth_service_1.authService.googleLogin(req.body);
-    res.status(http_status_1.default.OK).json({
+    (0, sendResponse_1.default)(res, {
         success: true,
-        statusCode: 200,
+        statusCode: http_status_1.default.OK,
         message: "Google login successful",
-        data: result
+        data: result,
     });
 }));
 const changePassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { userId } = req.user;
     const result = yield auth_service_1.authService.changePassword(userId, req.body);
-    res.status(http_status_1.default.OK).json({
+    (0, sendResponse_1.default)(res, {
         success: true,
-        statusCode: 200,
-        message: "Password Changed!",
-        data: result
+        statusCode: http_status_1.default.OK,
+        message: "Password updated successfully",
+        data: result,
     });
 }));
 exports.authController = {
     loginUser,
     refreshToken,
     googleLogin,
-    changePassword
+    changePassword,
 };

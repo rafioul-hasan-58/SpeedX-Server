@@ -12,27 +12,29 @@ const tools = [
         type: "function",
         function: {
             name: "searchBikes",
-            description: "Search bikes by brand, model or category from the database",
+            description: "Search bikes by brand name or bike type from the database",
             parameters: {
                 type: "object",
                 properties: {
-                    brand: {
+                    brandName: {
                         type: "string",
-                        description: "Bike brand name e.g. Yamaha, Honda, Suzuki",
+                        description: "Bike brand name e.g. Yamaha, Honda, Suzuki, TVS",
                     },
-                    category: {
-                        type: "string",
-                        description: "Bike category e.g. sport, commuter, off-road",
+                    bikeType: {
+                        type: ["string", "null"],
+                        enum: ["bike", "scooter", null, ""],
+                        description: "Bike type - only two options: 'bike' or 'scooter'",
                     },
                     maxPrice: {
-                        type: "number",
-                        description: "Maximum price filter",
+                        type: ["number", "null"],
+                        description: "Maximum price filter in BDT taka",
                     },
                     minPrice: {
-                        type: "number",
-                        description: "Minimum price filter",
+                        type: ["number", "null"],
+                        description: "Minimum price filter in BDT taka",
                     },
                 },
+                required: [],
             },
         },
     },
@@ -40,13 +42,13 @@ const tools = [
         type: "function",
         function: {
             name: "getBikeDetails",
-            description: "Get full details of a specific bike by its name",
+            description: "Get full details of a specific bike by its name including price, color, stock and description",
             parameters: {
                 type: "object",
                 properties: {
                     bikeName: {
                         type: "string",
-                        description: "The name of the bike",
+                        description: "The exact or partial name of the bike e.g. 'Honda CB 150R'",
                     },
                 },
                 required: ["bikeName"],
@@ -57,13 +59,13 @@ const tools = [
         type: "function",
         function: {
             name: "checkAvailability",
-            description: "Check if a specific bike is in stock",
+            description: "Check if a specific bike is available and how many are in stock",
             parameters: {
                 type: "object",
                 properties: {
                     bikeName: {
                         type: "string",
-                        description: "The name of the bike to check",
+                        description: "The exact or partial name of the bike to check availability",
                     },
                 },
                 required: ["bikeName"],
@@ -74,19 +76,20 @@ const tools = [
         type: "function",
         function: {
             name: "getCheapestBike",
-            description: "Get the cheapest bike overall or by brand/category",
+            description: "Get the cheapest or lowest price bike overall or filtered by brand or bike type",
             parameters: {
                 type: "object",
                 properties: {
                     brand: {
                         type: "string",
-                        description: "Optional brand filter",
+                        description: "Optional brand filter e.g. Yamaha, Honda, Suzuki",
                     },
                     category: {
                         type: "string",
-                        description: "Optional category filter",
+                        description: "Optional bike type filter - only two options: 'bike' or 'scooter'",
                     },
                 },
+                required: [],
             },
         },
     },
@@ -98,15 +101,16 @@ const runFunction = async (name: string, args: Record<string, any>) => {
     switch (name) {
         case "searchBikes": {
             const query: Record<string, any> = {};
-            if (args.brand) query.brand = new RegExp(args.brand, "i");
-            if (args.category) query.category = new RegExp(args.category, "i");
+            if (args.brand) query.brandName = new RegExp(args.brand, "i");
+            if (args.category) query.bikeType = new RegExp(args.category, "i");
             if (args.maxPrice || args.minPrice) {
                 query.price = {};
                 if (args.maxPrice) query.price.$lte = args.maxPrice;
                 if (args.minPrice) query.price.$gte = args.minPrice;
             }
+            console.log("query", query)
             const bikes = await Product.find(query)
-                .select("name brand price cc category inStock stocks")
+                .select("name brandName price bikeType type stocks inStock color")
                 .limit(5);
             if (bikes.length === 0) return { message: "No bikes found matching your criteria" };
             return { bikes };
@@ -115,7 +119,7 @@ const runFunction = async (name: string, args: Record<string, any>) => {
         case "getBikeDetails": {
             const bike = await Product.findOne({
                 name: new RegExp(args.bikeName, "i"),
-            });
+            }).select("name brandName price bikeType type stocks inStock color description");
             if (!bike) return { message: `No bike found with name ${args.bikeName}` };
             return { bike };
         }
@@ -134,11 +138,11 @@ const runFunction = async (name: string, args: Record<string, any>) => {
 
         case "getCheapestBike": {
             const query: Record<string, any> = { inStock: true };
-            if (args.brand) query.brand = new RegExp(args.brand, "i");
-            if (args.category) query.category = new RegExp(args.category, "i");
+            if (args.brand) query.brandName = new RegExp(args.brand, "i");
+            if (args.category) query.bikeType = new RegExp(args.category, "i");
             const bike = await Product.findOne(query)
                 .sort({ price: 1 })
-                .select("name brand price cc category stocks");
+                .select("name brandName price bikeType type stocks color");
             if (!bike) return { message: "No bikes found" };
             return { bike };
         }
@@ -174,9 +178,12 @@ const chat = async (userId: string, userMessage: string) => {
         messages,
         tools,
         tool_choice: "auto",
+        max_tokens: 1024,
+        parallel_tool_calls: false,
     });
 
     let responseMessage = response.choices[0].message;
+
 
     // 4 — Handle tool/function calling loop
     while (responseMessage.tool_calls && responseMessage.tool_calls.length > 0) {
@@ -187,8 +194,14 @@ const chat = async (userId: string, userMessage: string) => {
         // Run each tool call
         for (const toolCall of responseMessage.tool_calls) {
             const functionName = toolCall.function.name;
-            const functionArgs = JSON.parse(toolCall.function.arguments);
-
+            const rawArgs = JSON.parse(toolCall.function.arguments);
+            const functionArgs = Object.fromEntries(
+                Object.entries(rawArgs).filter(([_, v]) =>
+                    v !== null &&
+                    v !== undefined &&
+                    v !== ""
+                )
+            );
             // Run the actual database query
             const functionResult = await runFunction(functionName, functionArgs);
 

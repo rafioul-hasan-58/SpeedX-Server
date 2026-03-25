@@ -1,89 +1,103 @@
-import catchAsync from "../../utils/catchAsync"
-import httpStatus from "http-status"
-import { productServices } from "./product.service"
-import { Request, Response } from "express"
-
+import catchAsync from "../../utils/catchAsync";
+import httpStatus from "http-status";
+import { productServices } from "./product.service";
+import { Request, Response } from "express";
+import sendResponse from "../../utils/sendResponse";
 
 const createProduct = catchAsync(async (req: Request, res: Response) => {
-    const result = await productServices.createProduct(req.body)
-    res.status(httpStatus.OK).json({
+    const result = await productServices.createProduct(req.body);
+
+    sendResponse(res, {
         success: true,
-        message: 'Product added successfully',
-        statusCode: 201,
-        data: result
-    })
-})
+        statusCode: httpStatus.CREATED,
+        message: "Product added successfully",
+        data: result,
+    });
+});
+
 const updateProduct = catchAsync(async (req: Request, res: Response) => {
-    const { id } = req.params
-    // console.log(req.file, 'file');
-    const result = await productServices.updateProduct(req.body, id)
-    res.status(httpStatus.OK).json({
+    const { id } = req.params;
+    const result = await productServices.updateProduct(req.body, id);
+
+    sendResponse(res, {
         success: true,
-        message: 'Product updated successfully',
-        statusCode: 201,
-        data: result
-    })
-})
+        statusCode: httpStatus.OK,
+        message: "Product updated successfully",
+        data: result,
+    });
+});
+
 const removeImage = catchAsync(async (req: Request, res: Response) => {
     const { id } = req.params;
     const result = await productServices.removeImage(id, req.body.image);
-    res.status(httpStatus.OK).json({
-        success: true,
-        message: 'Image removed successfully',
-        statusCode: 201,
-        data: result
-    })
-})
-const getAllProducts = catchAsync(async (req: Request, res: Response) => {
-    const result = await productServices.getAllProducts(req.query)
-    res.status(httpStatus.OK).json({
-        success: true,
-        message: 'Product retrived successfully',
-        meta: result.meta,
-        data: result.data
 
-    })
-})
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Image removed successfully",
+        data: result,
+    });
+});
+
+const getAllProducts = catchAsync(async (req: Request, res: Response) => {
+    const result = await productServices.getAllProducts(req.query);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Products retrieved successfully",
+        meta: result.meta,
+        data: result.data,
+    });
+});
+
 const getMyProducts = catchAsync(async (req: Request, res: Response) => {
     const { email } = req.body;
     const result = await productServices.getMyProducts(req.query, email);
-    res.status(httpStatus.OK).json({
+
+    sendResponse(res, {
         success: true,
-        message: 'My added products retrived successfully',
-        statusCode: 201,
+        statusCode: httpStatus.OK,
+        message: "My products retrieved successfully",
         meta: result.meta,
-        data: result.data
-    })
-})
+        data: result.data,
+    });
+});
+
 const getSingleProduct = catchAsync(async (req: Request, res: Response) => {
-    const { id } = req.params
-    const result = await productServices.getSingleProduct(id)
-    res.status(httpStatus.OK).json({
+    const { id } = req.params;
+    const result = await productServices.getSingleProduct(id);
+
+    sendResponse(res, {
         success: true,
-        message: 'Single product retrived successfully',
-        statusCode: 201,
-        data: result
-    })
-})
+        statusCode: httpStatus.OK,
+        message: "Product retrieved successfully",
+        data: result,
+    });
+});
+
 const deleteProduct = catchAsync(async (req: Request, res: Response) => {
-    const { id } = req.params
-    const result = await productServices.deleteProduct(id)
-    res.status(httpStatus.OK).json({
+    const { id } = req.params;
+    const result = await productServices.deleteProduct(id);
+
+    sendResponse(res, {
         success: true,
-        message: 'Product deleted successfully',
-        statusCode: 201,
-        data: result
-    })
-})
+        statusCode: httpStatus.OK,
+        message: "Product deleted successfully",
+        data: result,
+    });
+});
+
 const getAvailableStocks = catchAsync(async (req: Request, res: Response) => {
-    const result = await productServices.getAvailableStocks()
-    res.status(httpStatus.OK).json({
+    const result = await productServices.getAvailableStocks();
+
+    sendResponse(res, {
         success: true,
-        message: 'Stocks retrived successfully',
-        statusCode: 201,
-        data: result
-    })
-})
+        statusCode: httpStatus.OK,
+        message: "Available stocks retrieved successfully",
+        data: result,
+    });
+});
 
 export const productController = {
     createProduct,
@@ -93,5 +107,5 @@ export const productController = {
     deleteProduct,
     getAvailableStocks,
     removeImage,
-    getMyProducts
-}
+    getMyProducts,
+};

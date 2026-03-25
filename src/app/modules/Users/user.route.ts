@@ -5,6 +5,7 @@ import { userValidations } from "./user.validation";
 import auth from "../../middlewares/auth";
 import { uploadFile } from "../../utils/s3/uploadFile";
 import { parseBodyData } from "../../middlewares/parseBody";
+import { UserRole } from "./user.constant";
 
 const router = Router()
 
@@ -19,7 +20,7 @@ router.get(
 );
 router.patch(
     '/update-profile',
-    auth(["customer"]),
+    auth(),
     uploadFile.uploadProfileImage,
     parseBodyData,
     validateRequest(userValidations.updateUserValidationSchema),
@@ -28,12 +29,12 @@ router.patch(
 router.delete('/delete/:id', userController.deleteUserFromDb)
 router.get(
     '/my-profile',
-    auth(["customer", "admin", "seller"]),
+    auth(),
     userController.myProfile
 );
 router.post(
     "/add-role",
-    auth(["customer"]),
+    auth(UserRole.CUSTOMER),
     userController.addSellerRole
 );
 

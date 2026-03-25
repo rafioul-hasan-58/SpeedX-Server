@@ -16,31 +16,32 @@ exports.chatbotController = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
 const chatbot_service_1 = require("./chatbot.service");
+const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
 const chat = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.userId;
     const { message } = req.body;
     const reply = yield chatbot_service_1.chatbotService.chat(userId, message);
-    res.status(http_status_1.default.OK).json({
+    (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: http_status_1.default.OK,
-        message: "Response generated successfully",
+        message: "Chat response generated successfully",
         data: { reply },
     });
 }));
 const getChatHistory = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.userId;
     const history = yield chatbot_service_1.chatbotService.getChatHistory(userId);
-    res.status(http_status_1.default.OK).json({
+    (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: http_status_1.default.OK,
-        message: "Chat history fetched successfully",
+        message: "Chat history retrieved successfully",
         data: history,
     });
 }));
 const clearChatHistory = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user.userId;
     yield chatbot_service_1.chatbotService.clearChatHistory(userId);
-    res.status(http_status_1.default.OK).json({
+    (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: http_status_1.default.OK,
         message: "Chat history cleared successfully",

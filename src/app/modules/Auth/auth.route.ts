@@ -15,7 +15,7 @@ router.post("/login", authController.loginUser);
 router.post('/refresh-token', authController.refreshToken);
 router.patch(
     "/change-password",
-    auth(["customer", "admin", "seller"]),
+    auth(),
     validateRequest(authValidation.changePasswordSchema),
     authController.changePassword
 );

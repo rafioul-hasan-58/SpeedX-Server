@@ -3,6 +3,7 @@ import validateRequest from "../../middlewares/validateRequest";
 import { productValidations } from "./product.validation";
 import { productController } from "./product.controller";
 import auth from "../../middlewares/auth";
+import { UserRole } from "../Users/user.constant";
 
 const router = Router()
 
@@ -14,7 +15,7 @@ router.post(
 
 router.patch(
     '/update-product/:id',
-    auth(['admin', 'customer']),
+    auth(UserRole.ADMIN,UserRole.CUSTOMER),
     validateRequest(productValidations.updateProductValidationSchema),
     productController.updateProduct
 );
@@ -41,7 +42,7 @@ router.get(
 );
 router.delete(
     '/delete-product/:id',
-    auth(['admin', 'customer']),
+    auth(UserRole.ADMIN,UserRole.CUSTOMER),
     productController.deleteProduct
 );
 

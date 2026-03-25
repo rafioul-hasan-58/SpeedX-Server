@@ -9,7 +9,7 @@ const router = Router();
 
 router.post(
     "/create-chat",
-    auth(['customer', 'admin']),
+    auth(),
     ChatController.createChatIntoDB
 );
 

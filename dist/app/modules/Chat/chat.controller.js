@@ -15,17 +15,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChatController = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const catchAsync_1 = __importDefault(require("../../utils/catchAsync"));
+const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
+// import { ChatService } from "./chat.service"; // Uncomment when service is ready
 const createChatIntoDB = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { email } = req.user;
     console.log(req.user);
-    // const result = await ChatService.createChatIntoDB(email, req.body)
-    res.status(http_status_1.default.OK).json({
+    // const result = await ChatService.createChatIntoDB(email, req.body);
+    (0, sendResponse_1.default)(res, {
         success: true,
-        statusCode: 200,
-        message: "Chat sent successful!!",
-        data: ""
+        statusCode: http_status_1.default.OK,
+        message: "Chat sent successfully!",
+        data: "" // replace with result when service is connected
     });
 }));
 exports.ChatController = {
-    createChatIntoDB
+    createChatIntoDB,
 };

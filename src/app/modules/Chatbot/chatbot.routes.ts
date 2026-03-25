@@ -6,19 +6,19 @@ const router = Router();
 
 router.post(
     "/chat",
-    auth(["customer", "admin", "seller"]),
+    auth(),
     chatbotController.chat
 );
 
 router.get(
     "/history",
-    auth(["customer", "admin", "seller"]),
+    auth(),
     chatbotController.getChatHistory
 );
 
 router.delete(
     "/clear",
-    auth(["customer", "admin", "seller"]),
+    auth(),
     chatbotController.clearChatHistory
 );
 

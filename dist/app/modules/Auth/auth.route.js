@@ -13,5 +13,5 @@ const router = (0, express_1.Router)();
 router.post('/google-login', auth_controller_1.authController.googleLogin);
 router.post("/login", auth_controller_1.authController.loginUser);
 router.post('/refresh-token', auth_controller_1.authController.refreshToken);
-router.patch("/change-password", (0, auth_1.default)(["customer", "admin", "seller"]), (0, validateRequest_1.default)(auth_validation_1.authValidation.changePasswordSchema), auth_controller_1.authController.changePassword);
+router.patch("/change-password", (0, auth_1.default)(), (0, validateRequest_1.default)(auth_validation_1.authValidation.changePasswordSchema), auth_controller_1.authController.changePassword);
 exports.authRoutes = router;
