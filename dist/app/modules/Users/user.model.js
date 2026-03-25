@@ -36,8 +36,8 @@ const userSchema = new mongoose_1.Schema({
     },
     roles: {
         type: [String],
-        enum: ["admin", "customer", "seller"],
-        default: ['customer']
+        enum: ["CUSTOMER", "SELLER", "ADMIN"],
+        default: ['CUSTOMER']
     },
     location: {
         type: String,
@@ -47,8 +47,8 @@ const userSchema = new mongoose_1.Schema({
     },
     activeRole: {
         type: String,
-        enum: ["admin", "customer", "seller"],
-        default: "customer",
+        enum: ["CUSTOMER", "SELLER", "ADMIN"],
+        default: "CUSTOMER",
     },
     isBlocked: {
         type: Boolean,

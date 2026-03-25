@@ -23,8 +23,8 @@ const userSchema = new Schema<IUser, UserModel>(
         },
         roles: {
             type: [String],
-            enum: ["admin", "customer", "seller"],
-            default: ['customer']
+            enum: ["CUSTOMER", "SELLER","ADMIN"],
+            default: ['CUSTOMER']
         },
         location: {
             type: String,
@@ -34,8 +34,8 @@ const userSchema = new Schema<IUser, UserModel>(
         },
         activeRole: {
             type: String,
-            enum: ["admin", "customer", "seller"],
-            default: "customer",
+            enum: ["CUSTOMER", "SELLER","ADMIN"],
+            default: "CUSTOMER",
         },
         isBlocked: {
             type: Boolean,

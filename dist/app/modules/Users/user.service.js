@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.userServices = void 0;
 const AppError_1 = __importDefault(require("../../errors/AppError"));
+const user_constant_1 = require("./user.constant");
 const user_model_1 = require("./user.model");
 const http_status_1 = __importDefault(require("http-status"));
 const register = (payload) => __awaiter(void 0, void 0, void 0, function* () {
@@ -59,10 +60,10 @@ const addSellerRole = (userId) => __awaiter(void 0, void 0, void 0, function* ()
     if (!user) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "User not found!");
     }
-    if (user === null || user === void 0 ? void 0 : user.roles.includes("seller")) {
+    if (user === null || user === void 0 ? void 0 : user.roles.includes(user_constant_1.UserRole.SELLER)) {
         throw new AppError_1.default(http_status_1.default.CONFLICT, "You already have seller role!");
     }
-    const result = yield user_model_1.User.updateOne({ _id: userId }, { $addToSet: { roles: "seller" } });
+    const result = yield user_model_1.User.updateOne({ _id: userId }, { $addToSet: { roles: user_constant_1.UserRole.SELLER } });
     return result;
 });
 const switchRole = (userId) => __awaiter(void 0, void 0, void 0, function* () {

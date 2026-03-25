@@ -1,4 +1,5 @@
 import AppError from "../../errors/AppError";
+import { UserRole } from "./user.constant";
 import { IUser } from "./user.interface";
 import { User } from "./user.model";
 import httpStatus from "http-status";
@@ -51,12 +52,13 @@ const addSellerRole = async (userId: string) => {
     if (!user) {
         throw new AppError(httpStatus.NOT_FOUND, "User not found!")
     }
-    if (user?.roles.includes("seller")) {
+    if (user?.roles.includes(UserRole.SELLER)) {
         throw new AppError(httpStatus.CONFLICT, "You already have seller role!")
     }
-    const result = await User.updateOne({ _id: userId }, { $addToSet: { roles: "seller" } })
+    const result = await User.updateOne({ _id: userId }, { $addToSet: { roles: UserRole.SELLER } })
     return result
 };
+
 
 const switchRole = async (userId: string) => {
     const user = await User.findById({ _id: userId });
@@ -64,9 +66,6 @@ const switchRole = async (userId: string) => {
         throw new AppError(httpStatus.NOT_FOUND, "User not found!")
     }
 }
-
-
-
 
 export const userServices = {
     register,

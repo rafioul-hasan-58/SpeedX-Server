@@ -7,7 +7,7 @@ export interface IUser {
     password: string;
     profileImage?: string
     roles: string[]
-    activeRole: 'admin' | 'customer' | "seller",
+    activeRole: "CUSTOMER" | "SELLER" | "ADMIN",
     isBlocked: boolean;
     location?: string;
     bio?: string;

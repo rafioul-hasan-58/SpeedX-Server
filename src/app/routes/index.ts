@@ -6,6 +6,7 @@ import { authRoutes } from "../modules/Auth/auth.route";
 import { chatRoomRoute } from "../modules/ChatRoom/chatRoom.route";
 import { ChatRoute } from "../modules/Chat/chat.route";
 import { chatbotRoutes } from "../modules/Chatbot/chatbot.routes";
+import { storeRoutes } from "../modules/Store/store.routes";
 
 const router = Router();
 
@@ -37,6 +38,10 @@ const moduleRoutes = [
     {
         path: '/chatbot',
         route: chatbotRoutes
+    },
+    {
+        path: '/store',
+        route: storeRoutes
     },
 ];
 
