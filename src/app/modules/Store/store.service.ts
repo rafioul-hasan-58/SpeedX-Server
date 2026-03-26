@@ -3,6 +3,7 @@ import { User } from "../Users/user.model";
 import { IStore } from "./store.interface";
 import httpStatus from 'http-status'
 import { Store } from "./store.model";
+import { userServices } from "../Users/user.service";
 
 const createStore = async (userId: string, payload: IStore) => {
     const user = await User.findById({ _id: userId });
@@ -16,22 +17,10 @@ const createStore = async (userId: string, payload: IStore) => {
         address: payload.address,
         phone: payload.phone,
     });
+    await userServices.addSellerRole(userId);
 
     return result
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

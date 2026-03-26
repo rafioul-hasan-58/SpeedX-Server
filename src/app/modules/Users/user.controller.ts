@@ -81,6 +81,18 @@ const addSellerRole = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+const switchRole = catchAsync(async (req: Request, res: Response) => {
+    const { userId } = req.user;
+    const result = await userServices.switchRole(userId);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "Role switched successfully",
+        data: result,
+    });
+});
+
 export const userController = {
     register,
     updateProfile,
@@ -88,4 +100,5 @@ export const userController = {
     myProfile,
     getAllUsers,
     addSellerRole,
+    switchRole
 };

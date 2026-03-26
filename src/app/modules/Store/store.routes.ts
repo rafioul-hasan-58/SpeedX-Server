@@ -8,7 +8,7 @@ import auth from "../../middlewares/auth";
 const router = Router();
 
 router.post(
-    "/create-store",
+    "/create",
     auth(),
     validateRequest(storeValidations.storeValidationSchema),
     storeController.createStore

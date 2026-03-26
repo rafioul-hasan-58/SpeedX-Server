@@ -1,4 +1,6 @@
+import config from "../../config";
 import AppError from "../../errors/AppError";
+import { createToken } from "../Auth/auth.utils";
 import { UserRole } from "./user.constant";
 import { IUser } from "./user.interface";
 import { User } from "./user.model";
@@ -64,6 +66,42 @@ const switchRole = async (userId: string) => {
     const user = await User.findById({ _id: userId });
     if (!user) {
         throw new AppError(httpStatus.NOT_FOUND, "User not found!")
+    }
+
+    let newRole = user.activeRole;
+    switch (user.activeRole) {
+        case UserRole.CUSTOMER:
+            if (!user.roles.includes(UserRole.SELLER)) {
+                throw new AppError(httpStatus.FORBIDDEN, "User does not have seller role!");
+            }
+            newRole = UserRole.SELLER;
+            break;
+        case UserRole.SELLER:
+            newRole = UserRole.CUSTOMER;
+            break;
+        default:
+            break;
+    }
+
+    await User.findByIdAndUpdate(
+        userId,
+        { activeRole: newRole },
+        { new: true }
+    );
+    const jwtPayload = {
+        userId: user.id,
+        email: user.email,
+        activeRole: newRole
+    }
+    const accessToken = createToken(
+        jwtPayload,
+        config.jwt_access_secret as string,
+        config.jwt_access_expires_in as `${number}s` | `${number}m` | `${number}h` | `${number}d`
+    );
+    return {
+        message: "Role switched!",
+        activeRole: newRole,
+        accessToken
     }
 }
 

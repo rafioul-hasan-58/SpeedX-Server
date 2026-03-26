@@ -37,5 +37,10 @@ router.post(
     auth(UserRole.CUSTOMER),
     userController.addSellerRole
 );
+router.post(
+    "/switch-role",
+    auth(UserRole.CUSTOMER, UserRole.SELLER),
+    userController.switchRole
+);
 
 export const userRoutes = router

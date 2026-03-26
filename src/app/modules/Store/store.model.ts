@@ -14,10 +14,10 @@ const storeSchema = new Schema<IStore>({
     description: {
         type: String,
     },
-    logo: {
+    logoUrl: {
         type: String,
     },
-    banner: {
+    bannerUrl: {
         type: String,
     },
     isActive: {

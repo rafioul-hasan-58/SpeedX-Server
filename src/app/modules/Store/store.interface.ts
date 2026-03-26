@@ -5,8 +5,8 @@ export interface IStore {
   owner: Types.ObjectId;        // User reference
   storeName: string;
   description?: string;
-  logo?: string;
-  banner?: string;
+  logoUrl?: string;
+  bannerUrl?: string;
   isActive: boolean;
   isVerified: boolean;
   address?: string;
