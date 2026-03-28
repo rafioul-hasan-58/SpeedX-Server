@@ -48,13 +48,13 @@ const getAllProducts = async (query: Record<string, unknown>) => {
         },
     };
 };
-const getMyProducts = async (query: Record<string, unknown>, email: string) => {
+const getMyProducts = async (query: Record<string, unknown>, userId: string) => {
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 6;
     const skip = (page - 1) * limit;
 
     // Build query with filters/search
-    const productQuery = new QueryBuilder(Product.find({ addedBy: email }), query)
+    const productQuery = new QueryBuilder(Product.find({ addedBy: userId }), query)
         .filter()
         .search(productSearchableFields);
 

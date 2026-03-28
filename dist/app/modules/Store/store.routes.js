@@ -10,5 +10,5 @@ const validateRequest_1 = __importDefault(require("../../middlewares/validateReq
 const store_validation_1 = require("./store.validation");
 const auth_1 = __importDefault(require("../../middlewares/auth"));
 const router = (0, express_1.Router)();
-router.post("/create-store", (0, auth_1.default)(), (0, validateRequest_1.default)(store_validation_1.storeValidations.storeValidationSchema), store_controller_1.storeController.createStore);
+router.post("/create", (0, auth_1.default)(), (0, validateRequest_1.default)(store_validation_1.storeValidations.storeValidationSchema), store_controller_1.storeController.createStore);
 exports.storeRoutes = router;

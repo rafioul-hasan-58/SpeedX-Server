@@ -15,7 +15,7 @@ router.post(
 
 router.patch(
     '/update-product/:id',
-    auth(UserRole.ADMIN,UserRole.CUSTOMER),
+    auth(UserRole.ADMIN, UserRole.CUSTOMER),
     validateRequest(productValidations.updateProductValidationSchema),
     productController.updateProduct
 );
@@ -29,7 +29,8 @@ router.get(
     productController.getAllProducts
 );
 router.get(
-    '/get-my-added-products',
+    '/get-my',
+    auth(UserRole.SELLER),
     productController.getMyProducts
 );
 router.get(
@@ -42,7 +43,7 @@ router.get(
 );
 router.delete(
     '/delete-product/:id',
-    auth(UserRole.ADMIN,UserRole.CUSTOMER),
+    auth(UserRole.ADMIN, UserRole.CUSTOMER),
     productController.deleteProduct
 );
 

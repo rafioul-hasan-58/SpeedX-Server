@@ -19,4 +19,5 @@ router.patch('/update-profile', (0, auth_1.default)(), uploadFile_1.uploadFile.u
 router.delete('/delete/:id', user_controller_1.userController.deleteUserFromDb);
 router.get('/my-profile', (0, auth_1.default)(), user_controller_1.userController.myProfile);
 router.post("/add-role", (0, auth_1.default)(user_constant_1.UserRole.CUSTOMER), user_controller_1.userController.addSellerRole);
+router.post("/switch-role", (0, auth_1.default)(user_constant_1.UserRole.CUSTOMER, user_constant_1.UserRole.SELLER), user_controller_1.userController.switchRole);
 exports.userRoutes = router;

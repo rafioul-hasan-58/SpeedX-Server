@@ -6,8 +6,33 @@ import { IUser } from "./user.interface";
 import { User } from "./user.model";
 import httpStatus from "http-status";
 const register = async (payload: IUser) => {
-    const result = await User.create(payload);
-    return result
+    const isUserExists = await User.findOne({ email: payload.email });
+    if (isUserExists) {
+        throw new AppError(httpStatus.CONFLICT, "User already exists!")
+    }
+    const user = await User.create(payload);
+    const jwtPayload = {
+        userId: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        activeRole: user.activeRole
+    }
+    const accessToken = createToken(
+        jwtPayload,
+        config.jwt_access_secret as string,
+        config.jwt_access_expires_in as `${number}s` | `${number}m` | `${number}h` | `${number}d`
+    );
+    const refreshToken = createToken(
+        jwtPayload,
+        config.jwt_refresh_secret as string,
+        config.jwt_refresh_expires_in as `${number}s` | `${number}m` | `${number}h` | `${number}d`
+    );
+
+    return {
+        user,
+        accessToken,
+        refreshToken
+    }
 }
 const myProfile = async (userId: string) => {
     const result = await User.findById({ _id: userId });

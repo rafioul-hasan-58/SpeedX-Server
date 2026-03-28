@@ -13,13 +13,31 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.userServices = void 0;
+const config_1 = __importDefault(require("../../config"));
 const AppError_1 = __importDefault(require("../../errors/AppError"));
+const auth_utils_1 = require("../Auth/auth.utils");
 const user_constant_1 = require("./user.constant");
 const user_model_1 = require("./user.model");
 const http_status_1 = __importDefault(require("http-status"));
 const register = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield user_model_1.User.create(payload);
-    return result;
+    const isUserExists = yield user_model_1.User.findOne({ email: payload.email });
+    if (isUserExists) {
+        throw new AppError_1.default(http_status_1.default.CONFLICT, "User already exists!");
+    }
+    const user = yield user_model_1.User.create(payload);
+    const jwtPayload = {
+        userId: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        activeRole: user.activeRole
+    };
+    const accessToken = (0, auth_utils_1.createToken)(jwtPayload, config_1.default.jwt_access_secret, config_1.default.jwt_access_expires_in);
+    const refreshToken = (0, auth_utils_1.createToken)(jwtPayload, config_1.default.jwt_refresh_secret, config_1.default.jwt_refresh_expires_in);
+    return {
+        user,
+        accessToken,
+        refreshToken
+    };
 });
 const myProfile = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield user_model_1.User.findById({ _id: userId });
@@ -71,6 +89,32 @@ const switchRole = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     if (!user) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "User not found!");
     }
+    let newRole = user.activeRole;
+    switch (user.activeRole) {
+        case user_constant_1.UserRole.CUSTOMER:
+            if (!user.roles.includes(user_constant_1.UserRole.SELLER)) {
+                throw new AppError_1.default(http_status_1.default.FORBIDDEN, "User does not have seller role!");
+            }
+            newRole = user_constant_1.UserRole.SELLER;
+            break;
+        case user_constant_1.UserRole.SELLER:
+            newRole = user_constant_1.UserRole.CUSTOMER;
+            break;
+        default:
+            break;
+    }
+    yield user_model_1.User.findByIdAndUpdate(userId, { activeRole: newRole }, { new: true });
+    const jwtPayload = {
+        userId: user.id,
+        email: user.email,
+        activeRole: newRole
+    };
+    const accessToken = (0, auth_utils_1.createToken)(jwtPayload, config_1.default.jwt_access_secret, config_1.default.jwt_access_expires_in);
+    return {
+        message: "Role switched!",
+        activeRole: newRole,
+        accessToken
+    };
 });
 exports.userServices = {
     register,

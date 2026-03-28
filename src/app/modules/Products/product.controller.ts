@@ -52,8 +52,8 @@ const getAllProducts = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getMyProducts = catchAsync(async (req: Request, res: Response) => {
-    const { email } = req.body;
-    const result = await productServices.getMyProducts(req.query, email);
+    const { userId } = req.user;
+    const result = await productServices.getMyProducts(req.query, userId);
 
     sendResponse(res, {
         success: true,

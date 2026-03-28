@@ -57,8 +57,8 @@ const getAllProducts = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
     });
 }));
 const getMyProducts = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { email } = req.body;
-    const result = yield product_service_1.productServices.getMyProducts(req.query, email);
+    const { userId } = req.user;
+    const result = yield product_service_1.productServices.getMyProducts(req.query, userId);
     (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: http_status_1.default.OK,

@@ -18,13 +18,24 @@ const http_status_1 = __importDefault(require("http-status"));
 const user_service_1 = require("./user.service");
 const uploadFile_1 = require("../../utils/s3/uploadFile");
 const sendResponse_1 = __importDefault(require("../../utils/sendResponse"));
+const config_1 = __importDefault(require("../../config"));
 const register = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield user_service_1.userServices.register(req.body);
+    const { refreshToken, accessToken, user } = result;
+    res.cookie("refreshToken", refreshToken, {
+        secure: config_1.default.NODE_ENV === "production",
+        httpOnly: true,
+        sameSite: true,
+        maxAge: 1000 * 60 * 60 * 24 * 365,
+    });
     (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: http_status_1.default.CREATED,
         message: "User registered successfully",
-        data: result,
+        data: {
+            user,
+            accessToken
+        },
     });
 }));
 const myProfile = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -80,6 +91,16 @@ const addSellerRole = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
         data: result,
     });
 }));
+const switchRole = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { userId } = req.user;
+    const result = yield user_service_1.userServices.switchRole(userId);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: "Role switched successfully",
+        data: result,
+    });
+}));
 exports.userController = {
     register,
     updateProfile,
@@ -87,4 +108,5 @@ exports.userController = {
     myProfile,
     getAllUsers,
     addSellerRole,
+    switchRole
 };

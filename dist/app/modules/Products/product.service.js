@@ -55,12 +55,12 @@ const getAllProducts = (query) => __awaiter(void 0, void 0, void 0, function* ()
         },
     };
 });
-const getMyProducts = (query, email) => __awaiter(void 0, void 0, void 0, function* () {
+const getMyProducts = (query, userId) => __awaiter(void 0, void 0, void 0, function* () {
     const page = Number(query.page) || 1;
     const limit = Number(query.limit) || 6;
     const skip = (page - 1) * limit;
     // Build query with filters/search
-    const productQuery = new QueryBuilder_1.default(product_model_1.Product.find({ addedBy: email }), query)
+    const productQuery = new QueryBuilder_1.default(product_model_1.Product.find({ addedBy: userId }), query)
         .filter()
         .search(product_constant_1.productSearchableFields);
     // Count total BEFORE pagination

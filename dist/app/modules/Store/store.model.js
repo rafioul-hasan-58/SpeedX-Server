@@ -47,10 +47,10 @@ const storeSchema = new mongoose_1.Schema({
     description: {
         type: String,
     },
-    logo: {
+    logoUrl: {
         type: String,
     },
-    banner: {
+    bannerUrl: {
         type: String,
     },
     isActive: {

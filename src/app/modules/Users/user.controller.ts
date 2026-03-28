@@ -4,15 +4,27 @@ import httpStatus from "http-status";
 import { userServices } from "./user.service";
 import { getImageUrl } from "../../utils/s3/uploadFile";
 import sendResponse from "../../utils/sendResponse";
+import config from "../../config";
 
 const register = catchAsync(async (req: Request, res: Response) => {
     const result = await userServices.register(req.body);
+    const { refreshToken, accessToken, user } = result
+
+    res.cookie("refreshToken", refreshToken, {
+        secure: config.NODE_ENV === "production",
+        httpOnly: true,
+        sameSite: true,
+        maxAge: 1000 * 60 * 60 * 24 * 365,
+    })
 
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.CREATED,
         message: "User registered successfully",
-        data: result,
+        data: {
+            user,
+            accessToken
+        },
     });
 });
 

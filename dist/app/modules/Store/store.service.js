@@ -17,6 +17,7 @@ const AppError_1 = __importDefault(require("../../errors/AppError"));
 const user_model_1 = require("../Users/user.model");
 const http_status_1 = __importDefault(require("http-status"));
 const store_model_1 = require("./store.model");
+const user_service_1 = require("../Users/user.service");
 const createStore = (userId, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield user_model_1.User.findById({ _id: userId });
     if (!user) {
@@ -29,6 +30,7 @@ const createStore = (userId, payload) => __awaiter(void 0, void 0, void 0, funct
         address: payload.address,
         phone: payload.phone,
     });
+    yield user_service_1.userServices.addSellerRole(userId);
     return result;
 });
 exports.storeService = {

@@ -47,6 +47,7 @@ const googleLogin = (body) => __awaiter(void 0, void 0, void 0, function* () {
     const jwtPayload = {
         userId: user.id,
         email: user.email,
+        fullName: user.fullName,
         activeRole: user.activeRole
     };
     const accessToken = (0, auth_utils_1.createToken)(jwtPayload, config_1.default.jwt_access_secret, config_1.default.jwt_access_expires_in);
@@ -69,6 +70,7 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     }
     const jwtPayload = {
         userId: user.id,
+        fullName: user.fullName,
         email: user.email,
         activeRole: user.activeRole
     };

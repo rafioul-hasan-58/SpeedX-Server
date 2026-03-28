@@ -35,6 +35,7 @@ const googleLogin = async (body: { token: string }) => {
   const jwtPayload = {
     userId: user.id,
     email: user.email,
+    fullName: user.fullName,
     activeRole: user.activeRole
   }
   const accessToken = createToken(
@@ -65,6 +66,7 @@ const loginUser = async (payload: IUserLogin) => {
 
   const jwtPayload = {
     userId: user.id,
+    fullName: user.fullName,
     email: user.email,
     activeRole: user.activeRole
   }
