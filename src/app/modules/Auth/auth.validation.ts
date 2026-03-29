@@ -9,8 +9,32 @@ const changePasswordSchema = z.object({
   oldPassword: z.string({ required_error: 'Old Password is required' }),
 
 });
+const resetPasswordValidationSchema = z.object({
+  newPassword: z.string().min(8, "Password must be at least 8 characters"),
+  confirmPassword: z.string(),
+  email: z.string({ required_error: "Email is required" }).email("Invalid email address")
+})
+
+const forgotPasswordValidationSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+});
+
+
+
+const resendOtpValidationSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+});
+
+const verifyOTPSchema = z.object({
+  email: z.string().email({ message: "Invalid email address" }),
+  otp: z.number().min(6, "Number will be at least 6 character")
+});
 
 export const authValidation = {
   loginValidationSchema,
-  changePasswordSchema
+  changePasswordSchema,
+  resetPasswordValidationSchema,
+  forgotPasswordValidationSchema,
+  resendOtpValidationSchema,
+  verifyOTPSchema
 }

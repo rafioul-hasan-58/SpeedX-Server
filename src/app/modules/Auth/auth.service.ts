@@ -152,7 +152,44 @@ const changePassword = async (userId: string, password: { newPassword: string, o
 
 }
 
-const verifyOTP = async (email: string, otp: string) => {
+const verifyForgotOtp = async (email: string, otp: string) => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found!");
+  }
+  const savedOtp = await OTP.findOne({ userId: user.id })
+
+  if (!savedOtp) {
+    throw new AppError(httpStatus.BAD_REQUEST, "OTP Not found!");
+  }
+
+  if (savedOtp.otpExpiresAt! < new Date()) {
+    throw new AppError(httpStatus.BAD_REQUEST, "OTP has expired!");
+  }
+
+  if (Number(savedOtp.otpCode) !== Number(otp)) {
+    throw new AppError(httpStatus.BAD_REQUEST, "OTP not matched!");
+  }
+
+  // update database
+  await OTP.deleteOne({ _id: savedOtp._id });
+
+  const jwtPayload = {
+    userId: user.id,
+    fullName: user.fullName,
+    email: user.email,
+    activeRole: user.activeRole
+  }
+  const accessToken = createToken(
+    jwtPayload,
+    config.jwt_access_secret as string,
+    config.jwt_access_expires_in as `${number}s` | `${number}m` | `${number}h` | `${number}d`
+  );
+  return {
+    accessToken
+  }
+}
+const verifyOtp = async (email: string, otp: string) => {
   const user = await User.findOne({ email });
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found!");
@@ -239,7 +276,8 @@ export const authService = {
   googleLogin,
   changePassword,
 
-  verifyOTP,
+  verifyOtp,
+  verifyForgotOtp,
   forgotPassword,
   resetPassword,
   resendOtp

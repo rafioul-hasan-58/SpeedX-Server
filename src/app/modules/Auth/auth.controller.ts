@@ -58,16 +58,26 @@ const changePassword = catchAsync(async (req: Request, res: Response) => {
         data: result,
     })
 })
-const verifyOTP = catchAsync(async (req: Request, res: Response) => {
+const verifyOtp = catchAsync(async (req: Request, res: Response) => {
     const { email, otp } = req.body;
-    const result = await authService.verifyOTP(email, otp);
+    const result = await authService.verifyOtp(email, otp);
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,
         message: "OTP verified successfully!",
         data: result,
     });
-})
+});
+const verifyForgotOtp = catchAsync(async (req: Request, res: Response) => {
+    const { email, otp } = req.body;
+    const result = await authService.verifyForgotOtp(email, otp);
+    sendResponse(res, {
+        success: true,
+        statusCode: httpStatus.OK,
+        message: "OTP verified in forgot password!",
+        data: result,
+    });
+});
 const forgetPassword = catchAsync(async (req, res) => {
     const { email } = req.body;
     const result = await authService.forgotPassword(email);
@@ -77,10 +87,9 @@ const forgetPassword = catchAsync(async (req, res) => {
         message: result.message,
         data: result,
     });
-})
+});
 const resetPassword = catchAsync(async (req, res) => {
-    const { newPassword, confirmPassword } = req.body;
-    const { email } = req.user;
+    const { newPassword, confirmPassword, email } = req.body;
     const result = await authService.resetPassword(
         email,
         newPassword,
@@ -91,7 +100,7 @@ const resetPassword = catchAsync(async (req, res) => {
         statusCode: httpStatus.OK,
         message: result.message,
     });
-})
+});
 const resendOtp = catchAsync(async (req, res) => {
     const { email } = req.body;
 
@@ -101,7 +110,7 @@ const resendOtp = catchAsync(async (req, res) => {
         statusCode: httpStatus.OK,
         message: result.message,
     });
-})
+});
 
 
 export const authController = {
@@ -110,7 +119,8 @@ export const authController = {
     googleLogin,
     changePassword,
 
-    verifyOTP,
+    verifyOtp,
+    verifyForgotOtp,
     forgetPassword,
     resetPassword,
     resendOtp

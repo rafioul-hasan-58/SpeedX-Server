@@ -124,7 +124,35 @@ const changePassword = (userId, password) => __awaiter(void 0, void 0, void 0, f
         message: "Password Changed!"
     };
 });
-const verifyOTP = (email, otp) => __awaiter(void 0, void 0, void 0, function* () {
+const verifyForgotOtp = (email, otp) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield user_model_1.User.findOne({ email });
+    if (!user) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "User not found!");
+    }
+    const savedOtp = yield otp_schema_1.OTP.findOne({ userId: user.id });
+    if (!savedOtp) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "OTP Not found!");
+    }
+    if (savedOtp.otpExpiresAt < new Date()) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "OTP has expired!");
+    }
+    if (Number(savedOtp.otpCode) !== Number(otp)) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "OTP not matched!");
+    }
+    // update database
+    yield otp_schema_1.OTP.deleteOne({ _id: savedOtp._id });
+    const jwtPayload = {
+        userId: user.id,
+        fullName: user.fullName,
+        email: user.email,
+        activeRole: user.activeRole
+    };
+    const accessToken = (0, auth_utils_1.createToken)(jwtPayload, config_1.default.jwt_access_secret, config_1.default.jwt_access_expires_in);
+    return {
+        accessToken
+    };
+});
+const verifyOtp = (email, otp) => __awaiter(void 0, void 0, void 0, function* () {
     const user = yield user_model_1.User.findOne({ email });
     if (!user) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "User not found!");
@@ -187,7 +215,8 @@ exports.authService = {
     refreshToken,
     googleLogin,
     changePassword,
-    verifyOTP,
+    verifyOtp,
+    verifyForgotOtp,
     forgotPassword,
     resetPassword,
     resendOtp
