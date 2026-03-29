@@ -36,5 +36,13 @@ export default {
   ai_api: {
     gemini_api_key: process.env.GEMINI_API_KEY,
     groq_api_key: process.env.GROQ_API_KEY,
-  }
+  },
+  smtp: {
+    email: process.env.SMTP_EMAIL,
+    pass: process.env.SMTP_PASS,
+    email_from: process.env.SMTP_EMAIL_FROM,
+    host: process.env.SMTP_HOST,
+    name: process.env.SMTP_NAME,
+    port: process.env.SMTP_PORT
+  },
 };

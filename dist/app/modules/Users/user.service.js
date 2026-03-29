@@ -116,6 +116,21 @@ const switchRole = (userId) => __awaiter(void 0, void 0, void 0, function* () {
         accessToken
     };
 });
+const pendingSellerRequest = () => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield user_model_1.User.find({ isSellerRequest: true });
+    return result;
+});
+const acceptSellerRequest = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield user_model_1.User.findById({ _id: userId });
+    if (!user) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "User not found!");
+    }
+    if (user === null || user === void 0 ? void 0 : user.roles.includes(user_constant_1.UserRole.SELLER)) {
+        throw new AppError_1.default(http_status_1.default.CONFLICT, "You already have seller role!");
+    }
+    const result = yield user_model_1.User.updateOne({ _id: userId }, { $addToSet: { roles: user_constant_1.UserRole.SELLER } });
+    return result;
+});
 exports.userServices = {
     register,
     updateProfile,

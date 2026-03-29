@@ -11,8 +11,14 @@ router.post(
     '/google-login',
     authController.googleLogin
 );
-router.post("/login", authController.loginUser);
-router.post('/refresh-token', authController.refreshToken);
+router.post(
+    "/login",
+    authController.loginUser
+);
+router.post(
+    '/refresh-token',
+    authController.refreshToken
+);
 router.patch(
     "/change-password",
     auth(),

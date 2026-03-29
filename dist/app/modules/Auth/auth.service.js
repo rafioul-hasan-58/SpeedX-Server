@@ -21,6 +21,8 @@ const auth_utils_1 = require("./auth.utils");
 const google_auth_library_1 = require("google-auth-library");
 const crypto_1 = __importDefault(require("crypto"));
 const bcrypt_1 = __importDefault(require("bcrypt"));
+const otp_schema_1 = require("./otp.schema");
+const sendOTP_1 = require("../../utils/sendOTP");
 const client = new google_auth_library_1.OAuth2Client(config_1.default.google_client_id);
 const googleLogin = (body) => __awaiter(void 0, void 0, void 0, function* () {
     const { token } = body;
@@ -122,9 +124,71 @@ const changePassword = (userId, password) => __awaiter(void 0, void 0, void 0, f
         message: "Password Changed!"
     };
 });
+const verifyOTP = (email, otp) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield user_model_1.User.findOne({ email });
+    if (!user) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "User not found!");
+    }
+    const savedOtp = yield otp_schema_1.OTP.findOne({ userId: user.id });
+    if (!savedOtp) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "OTP Not found!");
+    }
+    if (savedOtp.otpExpiresAt < new Date()) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "OTP has expired!");
+    }
+    if (Number(savedOtp.otpCode) !== Number(otp)) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "OTP not matched!");
+    }
+    // update database
+    yield otp_schema_1.OTP.deleteOne({ _id: savedOtp._id });
+    const result = user_model_1.User.updateOne({ _id: user._id }, { isVerified: true });
+    return {
+        message: "OTP Verified!",
+        result
+    };
+});
+const resendOtp = (email) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield user_model_1.User.findOne({ email });
+    if (!user) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "User not found!");
+    }
+    yield (0, sendOTP_1.sendOTP)(user.id);
+    return {
+        message: "New OTP has been sent to your email for reset password.",
+    };
+});
+const forgotPassword = (email) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield user_model_1.User.findOne({ email });
+    if (!user) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "User not found!");
+    }
+    // Step 1: Generate OTP
+    const res = yield (0, sendOTP_1.sendOTP)(user.id);
+    return {
+        message: res.message
+    };
+});
+const resetPassword = (email, newPassword, confirmPassword) => __awaiter(void 0, void 0, void 0, function* () {
+    if (newPassword !== confirmPassword) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Passwords do not match!");
+    }
+    const user = yield user_model_1.User.findOne({ email });
+    if (!user) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "User not found!");
+    }
+    const hashedPassword = yield bcrypt_1.default.hash(newPassword, 10);
+    yield user_model_1.User.updateOne({ _id: user._id }, { password: hashedPassword });
+    return {
+        message: "Password reset successfully!",
+    };
+});
 exports.authService = {
     loginUser,
     refreshToken,
     googleLogin,
-    changePassword
+    changePassword,
+    verifyOTP,
+    forgotPassword,
+    resetPassword,
+    resendOtp
 };

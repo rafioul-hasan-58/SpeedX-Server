@@ -129,7 +129,21 @@ const switchRole = async (userId: string) => {
         accessToken
     }
 }
-
+const pendingSellerRequest = async () => {
+    const result = await User.find({ isSellerRequest: true })
+    return result
+}
+const acceptSellerRequest = async (userId: string) => {
+    const user = await User.findById({ _id: userId });
+    if (!user) {
+        throw new AppError(httpStatus.NOT_FOUND, "User not found!")
+    }
+    if (user?.roles.includes(UserRole.SELLER)) {
+        throw new AppError(httpStatus.CONFLICT, "You already have seller role!")
+    }
+    const result = await User.updateOne({ _id: userId }, { $addToSet: { roles: UserRole.SELLER } })
+    return result
+}
 export const userServices = {
     register,
     updateProfile,

@@ -63,9 +63,50 @@ const changePassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
         data: result,
     });
 }));
+const verifyOTP = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email, otp } = req.body;
+    const result = yield auth_service_1.authService.verifyOTP(email, otp);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: "OTP verified successfully!",
+        data: result,
+    });
+}));
+const forgetPassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email } = req.body;
+    const result = yield auth_service_1.authService.forgotPassword(email);
+    (0, sendResponse_1.default)(res, {
+        success: true,
+        statusCode: http_status_1.default.OK,
+        message: result.message,
+        data: result,
+    });
+}));
+const resetPassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { newPassword, confirmPassword } = req.body;
+    const { email } = req.user;
+    const result = yield auth_service_1.authService.resetPassword(email, newPassword, confirmPassword);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        message: result.message,
+    });
+}));
+const resendOtp = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { email } = req.body;
+    const result = yield auth_service_1.authService.resendOtp(email);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        message: result.message,
+    });
+}));
 exports.authController = {
     loginUser,
     refreshToken,
     googleLogin,
     changePassword,
+    verifyOTP,
+    forgetPassword,
+    resetPassword,
+    resendOtp
 };

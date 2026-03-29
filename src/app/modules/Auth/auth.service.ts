@@ -7,6 +7,8 @@ import { createToken, verifyToken } from "./auth.utils";
 import { OAuth2Client } from "google-auth-library";
 import crypto from 'crypto';
 import bcrypt from 'bcrypt';
+import { OTP } from "./otp.schema";
+import { sendOTP } from "../../utils/sendOTP";
 
 const client = new OAuth2Client(config.google_client_id);
 
@@ -149,9 +151,96 @@ const changePassword = async (userId: string, password: { newPassword: string, o
   }
 
 }
+
+const verifyOTP = async (email: string, otp: string) => {
+  const user = await User.findOne({ email });
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found!");
+  }
+  const savedOtp = await OTP.findOne({ userId: user.id })
+
+  if (!savedOtp) {
+    throw new AppError(httpStatus.BAD_REQUEST, "OTP Not found!");
+  }
+
+  if (savedOtp.otpExpiresAt! < new Date()) {
+    throw new AppError(httpStatus.BAD_REQUEST, "OTP has expired!");
+  }
+
+  if (Number(savedOtp.otpCode) !== Number(otp)) {
+    throw new AppError(httpStatus.BAD_REQUEST, "OTP not matched!");
+  }
+
+  // update database
+  await OTP.deleteOne({ _id: savedOtp._id });
+
+  const result = User.updateOne({ _id: user._id }, { isVerified: true });
+  return {
+    message: "OTP Verified!",
+    result
+  }
+}
+const resendOtp = async (email: string) => {
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found!");
+  }
+
+  await sendOTP(user.id)
+  return {
+    message: "New OTP has been sent to your email for reset password.",
+  };
+}
+
+const forgotPassword = async (email: string) => {
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found!");
+  }
+
+  // Step 1: Generate OTP
+  const res = await sendOTP(user.id);
+  return {
+    message: res.message
+  }
+}
+
+const resetPassword = async (
+  email: string,
+  newPassword: string,
+  confirmPassword: string
+) => {
+  if (newPassword !== confirmPassword) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Passwords do not match!");
+  }
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found!");
+  }
+
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  await User.updateOne({ _id: user._id }, { password: hashedPassword });
+
+  return {
+    message: "Password reset successfully!",
+  };
+}
+
+
+
 export const authService = {
   loginUser,
   refreshToken,
   googleLogin,
-  changePassword
+  changePassword,
+
+  verifyOTP,
+  forgotPassword,
+  resetPassword,
+  resendOtp
 }
