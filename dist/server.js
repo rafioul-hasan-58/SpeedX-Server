@@ -17,11 +17,13 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const config_1 = __importDefault(require("./app/config"));
 const dns_1 = __importDefault(require("dns"));
 dns_1.default.setServers(["8.8.8.8", "1.1.1.1"]);
+const seedAdmin_1 = require("./app/DB/seedAdmin");
 let server;
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             yield mongoose_1.default.connect(config_1.default.database_url);
+            yield (0, seedAdmin_1.seedAdmin)();
             server = app_1.default.listen(config_1.default.port, () => {
                 console.log(`✅ SpeedX server is Running on port ${config_1.default.port}`);
             });

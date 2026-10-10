@@ -6,6 +6,8 @@ import config from "./app/config";
 import dns from "dns";
 dns.setServers(["8.8.8.8", "1.1.1.1"]);
 
+import { seedAdmin } from "./app/DB/seedAdmin";
+
 let server: Server;
 
 async function main() {
@@ -13,6 +15,7 @@ async function main() {
 
     try {
         await mongoose.connect(config.database_url as string);
+        await seedAdmin();
         server = app.listen(config.port, () => {
             console.log(`✅ SpeedX server is Running on port ${config.port}`)
         })
