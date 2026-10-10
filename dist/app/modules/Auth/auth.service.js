@@ -34,13 +34,17 @@ const googleLogin = (body) => __awaiter(void 0, void 0, void 0, function* () {
     if (!payload) {
         throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, "Invalid Google token payload");
     }
-    const { name, email } = payload;
+    const { name, email, picture } = payload;
     let user = yield user_model_1.User.findOne({ email });
     if (!user) {
         user = yield user_model_1.User.create({
-            name,
+            fullName: name || "Google User",
             email,
-            password: crypto_1.default.randomBytes(6).toString('hex')
+            profileImage: picture || 'https://i.ibb.co.com/7NZkW9fV/Head.jpg',
+            password: crypto_1.default.randomBytes(16).toString('hex'),
+            roles: ["CUSTOMER"],
+            activeRole: "CUSTOMER",
+            isVerified: true,
         });
     }
     if (user === null || user === void 0 ? void 0 : user.isBlocked) {
@@ -50,11 +54,13 @@ const googleLogin = (body) => __awaiter(void 0, void 0, void 0, function* () {
         userId: user.id,
         email: user.email,
         fullName: user.fullName,
-        activeRole: user.activeRole
+        activeRole: user.activeRole,
     };
     const accessToken = (0, auth_utils_1.createToken)(jwtPayload, config_1.default.jwt_access_secret, config_1.default.jwt_access_expires_in);
+    const refreshToken = (0, auth_utils_1.createToken)(jwtPayload, config_1.default.jwt_refresh_secret, config_1.default.jwt_refresh_expires_in);
     return {
-        accessToken
+        accessToken,
+        refreshToken,
     };
 });
 const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {

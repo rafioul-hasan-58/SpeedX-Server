@@ -37,15 +37,25 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
 })
 
 const googleLogin = catchAsync(async (req: Request, res: Response) => {
-    const result = await authService.googleLogin(req.body)
+    const result = await authService.googleLogin(req.body);
+    const { refreshToken } = result;
+
+    if (refreshToken) {
+        res.cookie("refreshToken", refreshToken, {
+            secure: config.NODE_ENV === "production",
+            httpOnly: true,
+            sameSite: true,
+            maxAge: 1000 * 60 * 60 * 24 * 365,
+        });
+    }
 
     sendResponse(res, {
         success: true,
         statusCode: httpStatus.OK,
         message: "Google login successful",
         data: result,
-    })
-})
+    });
+});
 
 const changePassword = catchAsync(async (req: Request, res: Response) => {
     const { userId } = req.user

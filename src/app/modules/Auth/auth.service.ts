@@ -22,34 +22,44 @@ const googleLogin = async (body: { token: string }) => {
   if (!payload) {
     throw new AppError(httpStatus.UNAUTHORIZED, "Invalid Google token payload");
   }
-  const { name, email } = payload;
+  const { name, email, picture } = payload;
   let user = await User.findOne({ email });
   if (!user) {
     user = await User.create({
-      name,
+      fullName: name || "Google User",
       email,
-      password: crypto.randomBytes(6).toString('hex')
-    })
+      profileImage: picture || 'https://i.ibb.co.com/7NZkW9fV/Head.jpg',
+      password: crypto.randomBytes(16).toString('hex'),
+      roles: ["CUSTOMER"],
+      activeRole: "CUSTOMER",
+      isVerified: true,
+    });
   }
   if (user?.isBlocked) {
-    throw new AppError(httpStatus.FORBIDDEN, 'User is blocked')
+    throw new AppError(httpStatus.FORBIDDEN, 'User is blocked');
   }
   const jwtPayload = {
     userId: user.id,
     email: user.email,
     fullName: user.fullName,
-    activeRole: user.activeRole
-  }
+    activeRole: user.activeRole,
+  };
   const accessToken = createToken(
     jwtPayload,
     config.jwt_access_secret as string,
     config.jwt_access_expires_in as `${number}s` | `${number}m` | `${number}h` | `${number}d`
   );
+  const refreshToken = createToken(
+    jwtPayload,
+    config.jwt_refresh_secret as string,
+    config.jwt_refresh_expires_in as `${number}s` | `${number}m` | `${number}h` | `${number}d`
+  );
 
   return {
-    accessToken
-  }
-}
+    accessToken,
+    refreshToken,
+  };
+};
 const loginUser = async (payload: IUserLogin) => {
   const user = await User.findOne({ email: payload.email });
   // const user = await User.isUserExistsByEmail(payload.email)

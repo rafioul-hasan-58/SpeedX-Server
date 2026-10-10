@@ -46,6 +46,15 @@ const refreshToken = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
 }));
 const googleLogin = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield auth_service_1.authService.googleLogin(req.body);
+    const { refreshToken } = result;
+    if (refreshToken) {
+        res.cookie("refreshToken", refreshToken, {
+            secure: config_1.default.NODE_ENV === "production",
+            httpOnly: true,
+            sameSite: true,
+            maxAge: 1000 * 60 * 60 * 24 * 365,
+        });
+    }
     (0, sendResponse_1.default)(res, {
         success: true,
         statusCode: http_status_1.default.OK,
