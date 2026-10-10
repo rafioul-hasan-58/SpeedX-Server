@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
 const path_1 = __importDefault(require("path"));
-dotenv_1.default.config({ path: path_1.default.join((process.cwd(), '.env')) });
+dotenv_1.default.config({ path: path_1.default.join(process.cwd(), '.env') });
 exports.default = {
     NODE_ENV: process.env.NODE_ENV,
     port: process.env.PORT,
@@ -36,6 +36,8 @@ exports.default = {
         endpoint: process.env.S3_ENDPOINT,
     },
     ai_api: {
+        ai_provider: process.env.AI_PROVIDER || "deepseek",
+        deepseek_api_key: process.env.DEEPSEEK_API_KEY,
         gemini_api_key: process.env.GEMINI_API_KEY,
         groq_api_key: process.env.GROQ_API_KEY,
     },

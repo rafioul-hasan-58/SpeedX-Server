@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 import path from 'path';
 
-dotenv.config({ path: path.join((process.cwd(), '.env')) });
+dotenv.config({ path: path.join(process.cwd(), '.env') });
 
 export default {
   NODE_ENV: process.env.NODE_ENV,
@@ -34,6 +34,8 @@ export default {
     endpoint: process.env.S3_ENDPOINT,
   },
   ai_api: {
+    ai_provider: process.env.AI_PROVIDER || "deepseek",
+    deepseek_api_key: process.env.DEEPSEEK_API_KEY,
     gemini_api_key: process.env.GEMINI_API_KEY,
     groq_api_key: process.env.GROQ_API_KEY,
   },

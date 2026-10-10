@@ -6,11 +6,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.SYSTEM_PROMPT = exports.GROQ_MODEL = exports.groqClient = void 0;
 const groq_sdk_1 = __importDefault(require("groq-sdk"));
 const index_1 = __importDefault(require("./index"));
-if (!index_1.default.ai_api.groq_api_key) {
-    throw new Error("GROQ_API_KEY is missing in .env");
-}
 exports.groqClient = new groq_sdk_1.default({
-    apiKey: index_1.default.ai_api.groq_api_key,
+    apiKey: index_1.default.ai_api.groq_api_key || "dummy_key",
 });
 exports.GROQ_MODEL = "llama-3.3-70b-versatile";
 exports.SYSTEM_PROMPT = `

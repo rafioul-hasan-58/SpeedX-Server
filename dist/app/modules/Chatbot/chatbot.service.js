@@ -50,7 +50,8 @@ const product_model_1 = require("../Products/product.model");
 const chatbot_model_1 = require("./chatbot.model");
 const AppError_1 = __importDefault(require("../../errors/AppError"));
 const http_status_1 = __importDefault(require("http-status"));
-const grok_1 = __importStar(require("../../config/grok"));
+const config_1 = __importDefault(require("../../config"));
+const deepseek_1 = __importStar(require("../../config/deepseek"));
 // ─── Tool Definitions (what AI can call) ─────────────────────────────────────
 const tools = [
     {
@@ -144,10 +145,12 @@ const runFunction = (name, args) => __awaiter(void 0, void 0, void 0, function* 
     switch (name) {
         case "searchBikes": {
             const query = {};
-            if (args.brand)
-                query.brandName = new RegExp(args.brand, "i");
-            if (args.category)
-                query.bikeType = new RegExp(args.category, "i");
+            const brand = args.brandName || args.brand;
+            const category = args.bikeType || args.category;
+            if (brand)
+                query.brandName = new RegExp(brand, "i");
+            if (category)
+                query.bikeType = new RegExp(category, "i");
             if (args.maxPrice || args.minPrice) {
                 query.price = {};
                 if (args.maxPrice)
@@ -185,10 +188,12 @@ const runFunction = (name, args) => __awaiter(void 0, void 0, void 0, function* 
         }
         case "getCheapestBike": {
             const query = { inStock: true };
-            if (args.brand)
-                query.brandName = new RegExp(args.brand, "i");
-            if (args.category)
-                query.bikeType = new RegExp(args.category, "i");
+            const brand = args.brandName || args.brand;
+            const category = args.bikeType || args.category;
+            if (brand)
+                query.brandName = new RegExp(brand, "i");
+            if (category)
+                query.bikeType = new RegExp(category, "i");
             const bike = yield product_model_1.Product.findOne(query)
                 .sort({ price: 1 })
                 .select("name brandName price bikeType type stocks color");
@@ -202,28 +207,30 @@ const runFunction = (name, args) => __awaiter(void 0, void 0, void 0, function* 
 });
 // ─── Main Chat Service ────────────────────────────────────────────────────────
 const chat = (userId, userMessage) => __awaiter(void 0, void 0, void 0, function* () {
+    if (!config_1.default.ai_api.deepseek_api_key) {
+        throw new AppError_1.default(http_status_1.default.SERVICE_UNAVAILABLE, "DeepSeek API key is not configured");
+    }
     // 1 — Find or create chatbot history for this user
     let chatbot = yield chatbot_model_1.Chatbot.findOne({ userId });
     if (!chatbot) {
         chatbot = new chatbot_model_1.Chatbot({ userId, messages: [] });
     }
-    // 2 — Build messages array for Groq (system + history + new message)
+    // 2 — Build messages array for DeepSeek (system + history + new message)
     const messages = [
-        { role: "system", content: grok_1.SYSTEM_PROMPT },
+        { role: "system", content: deepseek_1.SYSTEM_PROMPT },
         ...chatbot.messages.map((msg) => ({
             role: msg.role,
             content: msg.content,
         })),
         { role: "user", content: userMessage },
     ];
-    // 3 — Send to Groq with tools
-    let response = yield grok_1.default.chat.completions.create({
-        model: grok_1.GROQ_MODEL,
+    // 3 — Send to DeepSeek with tools
+    let response = yield deepseek_1.default.chat.completions.create({
+        model: deepseek_1.DEEPSEEK_MODEL,
         messages,
-        tools,
+        tools: tools,
         tool_choice: "auto",
         max_tokens: 1024,
-        parallel_tool_calls: false,
     });
     let responseMessage = response.choices[0].message;
     // 4 — Handle tool/function calling loop
@@ -232,6 +239,8 @@ const chat = (userId, userMessage) => __awaiter(void 0, void 0, void 0, function
         messages.push(responseMessage);
         // Run each tool call
         for (const toolCall of responseMessage.tool_calls) {
+            if (toolCall.type !== "function")
+                continue;
             const functionName = toolCall.function.name;
             const rawArgs = JSON.parse(toolCall.function.arguments);
             const functionArgs = Object.fromEntries(Object.entries(rawArgs).filter(([_, v]) => v !== null &&
@@ -246,11 +255,11 @@ const chat = (userId, userMessage) => __awaiter(void 0, void 0, void 0, function
                 content: JSON.stringify(functionResult),
             });
         }
-        // Send updated messages back to Groq
-        response = yield grok_1.default.chat.completions.create({
-            model: grok_1.GROQ_MODEL,
+        // Send updated messages back to DeepSeek
+        response = yield deepseek_1.default.chat.completions.create({
+            model: deepseek_1.DEEPSEEK_MODEL,
             messages,
-            tools,
+            tools: tools,
             tool_choice: "auto",
         });
         responseMessage = response.choices[0].message;

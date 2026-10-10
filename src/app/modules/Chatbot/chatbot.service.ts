@@ -1,9 +1,10 @@
-import Groq from "groq-sdk";
+import OpenAI from "openai";
 import { Product } from "../Products/product.model";
 import { Chatbot } from "./chatbot.model";
 import AppError from "../../errors/AppError";
 import httpStatus from "http-status";
-import groqClient, { GROQ_MODEL, SYSTEM_PROMPT } from "../../config/grok";
+import config from "../../config";
+import deepseekClient, { DEEPSEEK_MODEL, SYSTEM_PROMPT } from "../../config/deepseek";
 
 // ─── Tool Definitions (what AI can call) ─────────────────────────────────────
 
@@ -101,8 +102,10 @@ const runFunction = async (name: string, args: Record<string, any>) => {
     switch (name) {
         case "searchBikes": {
             const query: Record<string, any> = {};
-            if (args.brand) query.brandName = new RegExp(args.brand, "i");
-            if (args.category) query.bikeType = new RegExp(args.category, "i");
+            const brand = args.brandName || args.brand;
+            const category = args.bikeType || args.category;
+            if (brand) query.brandName = new RegExp(brand, "i");
+            if (category) query.bikeType = new RegExp(category, "i");
             if (args.maxPrice || args.minPrice) {
                 query.price = {};
                 if (args.maxPrice) query.price.$lte = args.maxPrice;
@@ -138,8 +141,10 @@ const runFunction = async (name: string, args: Record<string, any>) => {
 
         case "getCheapestBike": {
             const query: Record<string, any> = { inStock: true };
-            if (args.brand) query.brandName = new RegExp(args.brand, "i");
-            if (args.category) query.bikeType = new RegExp(args.category, "i");
+            const brand = args.brandName || args.brand;
+            const category = args.bikeType || args.category;
+            if (brand) query.brandName = new RegExp(brand, "i");
+            if (category) query.bikeType = new RegExp(category, "i");
             const bike = await Product.findOne(query)
                 .sort({ price: 1 })
                 .select("name brandName price bikeType type stocks color");
@@ -155,6 +160,12 @@ const runFunction = async (name: string, args: Record<string, any>) => {
 // ─── Main Chat Service ────────────────────────────────────────────────────────
 
 const chat = async (userId: string, userMessage: string) => {
+    if (!config.ai_api.deepseek_api_key) {
+        throw new AppError(
+            httpStatus.SERVICE_UNAVAILABLE,
+            "DeepSeek API key is not configured"
+        );
+    }
 
     // 1 — Find or create chatbot history for this user
     let chatbot = await Chatbot.findOne({ userId });
@@ -162,8 +173,8 @@ const chat = async (userId: string, userMessage: string) => {
         chatbot = new Chatbot({ userId, messages: [] });
     }
 
-    // 2 — Build messages array for Groq (system + history + new message)
-    const messages: Groq.Chat.Completions.ChatCompletionMessageParam[] = [
+    // 2 — Build messages array for DeepSeek (system + history + new message)
+    const messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
         { role: "system", content: SYSTEM_PROMPT },
         ...chatbot.messages.map((msg) => ({
             role: msg.role as "user" | "assistant",
@@ -172,14 +183,13 @@ const chat = async (userId: string, userMessage: string) => {
         { role: "user", content: userMessage },
     ];
 
-    // 3 — Send to Groq with tools
-    let response = await groqClient.chat.completions.create({
-        model: GROQ_MODEL,
+    // 3 — Send to DeepSeek with tools
+    let response = await deepseekClient.chat.completions.create({
+        model: DEEPSEEK_MODEL,
         messages,
-        tools,
+        tools: tools as any,
         tool_choice: "auto",
         max_tokens: 1024,
-        parallel_tool_calls: false,
     });
 
     let responseMessage = response.choices[0].message;
@@ -193,6 +203,7 @@ const chat = async (userId: string, userMessage: string) => {
 
         // Run each tool call
         for (const toolCall of responseMessage.tool_calls) {
+            if (toolCall.type !== "function") continue;
             const functionName = toolCall.function.name;
             const rawArgs = JSON.parse(toolCall.function.arguments);
             const functionArgs = Object.fromEntries(
@@ -213,11 +224,11 @@ const chat = async (userId: string, userMessage: string) => {
             });
         }
 
-        // Send updated messages back to Groq
-        response = await groqClient.chat.completions.create({
-            model: GROQ_MODEL,
+        // Send updated messages back to DeepSeek
+        response = await deepseekClient.chat.completions.create({
+            model: DEEPSEEK_MODEL,
             messages,
-            tools,
+            tools: tools as any,
             tool_choice: "auto",
         });
 

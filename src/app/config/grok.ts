@@ -1,12 +1,8 @@
 import Groq from "groq-sdk";
 import config from "./index";
 
-if (!config.ai_api.groq_api_key) {
-    throw new Error("GROQ_API_KEY is missing in .env");
-}
-
 export const groqClient = new Groq({
-    apiKey: config.ai_api.groq_api_key as string,
+    apiKey: config.ai_api.groq_api_key || "dummy_key",
 });
 
 export const GROQ_MODEL = "llama-3.3-70b-versatile";
