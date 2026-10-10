@@ -3,10 +3,12 @@ import mongoose from "mongoose";
 import { Server } from 'http'
 import config from "./app/config";
 
+import dns from "dns";
+dns.setServers(["8.8.8.8", "1.1.1.1"]);
+
 let server: Server;
 
 async function main() {
-        console.log("db",config.database_url)
 
 
     try {

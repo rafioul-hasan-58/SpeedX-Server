@@ -15,10 +15,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const app_1 = __importDefault(require("./app"));
 const mongoose_1 = __importDefault(require("mongoose"));
 const config_1 = __importDefault(require("./app/config"));
+const dns_1 = __importDefault(require("dns"));
+dns_1.default.setServers(["8.8.8.8", "1.1.1.1"]);
 let server;
 function main() {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log("db", config_1.default.database_url);
         try {
             yield mongoose_1.default.connect(config_1.default.database_url);
             server = app_1.default.listen(config_1.default.port, () => {

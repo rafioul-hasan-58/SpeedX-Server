@@ -8,8 +8,8 @@ const nodemailer_1 = __importDefault(require("nodemailer"));
 const config_1 = __importDefault(require("../config"));
 exports.transporter = nodemailer_1.default.createTransport({
     host: config_1.default.smtp.host,
-    port: config_1.default.smtp.port,
-    secure: false,
+    port: Number(config_1.default.smtp.port) || 587,
+    secure: Number(config_1.default.smtp.port) === 465,
     auth: {
         user: config_1.default.smtp.email,
         pass: config_1.default.smtp.pass,
